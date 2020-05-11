@@ -1,0 +1,261 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <script src="bootstrap/js/jquery-3.4.1.slim.min.js"></script>
+    <script src="bootstrap/js/popper.min.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="/css/MainWindowStyles.css">
+    <!--The page Title-->
+    <title>Flight Control</title>
+
+
+</head>
+<body style="background-color:#F2F4F6;">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 class="text-center">Flight Control</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-7">
+                <!--Map-->
+                <div id="myMap" onload="GetMap()"></div>
+                <h5>Flight Details</h5>
+                <!--Flight Details Table-->
+                <table id="FlightDetailsTable">
+                    <tr>
+                        <th rowspan="2">ID</th>
+                        <th rowspan="2">Company</th>
+                        <th rowspan="2">Passengers</th>
+                        <th colspan="2">Departure</th>
+                        <th rowspan="2">Departure Date</th>
+                        <th colspan="2">Destination</th>
+                        <th rowspan="2">Arrival Date</th>
+                    </tr>
+                    <tr id="PositionTable">
+                        <!--source-->
+                        <th>longitude</th>
+                        <th>latitude</th>
+                        <!--destination-->
+                        <th>longitude</th>
+                        <th>latitude</th>
+                    </tr>
+                    <!--Table content-->
+                    <tr>
+                        <td>1 </td>
+                        <td>swiss</td>
+                        <td>214</td>
+                        <td>34.22322</td>
+                        <td>30.2232</td>
+                        <td>01/08/2020</td>
+                        <td>15.222</td>
+                        <td>10.2222</td>
+                        <td>12/08/2020</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-5" id="table-wrapper">
+                <!--My Flights Table-->
+                <h3>My Flights</h3>
+                <div id="table-scroll">
+                    <table class="MyFlights">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Company</th>
+                                <th>Longitude</th>
+                                <th>Latitude</th>
+                                <th>Passengers</th>
+                                <th>Departure Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>ELAL</td>
+                                <td>12.2569</td>
+                                <td>32.0001</td>
+                                <td>300</td>
+                                <td>12/05/2022</td>
+                                <td><span class="close">&times;</span></td>
+
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>ELAL</td>
+                                <td>12.2569</td>
+                                <td>32.000241</td>
+                                <td>300</td>
+                                <td>12/05/2022</td>
+                                <td><span class="close">&times;</span></td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>ELAL</td>
+                                <td>12.2569</td>
+                                <td>32.0001241</td>
+                                <td>300</td>
+                                <td>12/05/2022</td>
+                                <td><span class="close">&times;</span></td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>ELAL</td>
+                                <td>12.2569</td>
+                                <td>32.0001241</td>
+                                <td>300</td>
+                                <td>12/05/2022</td>
+                                <td><span class="close">&times;</span></td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>ELAL</td>
+                                <td>12.2569</td>
+                                <td>32.0001241</td>
+                                <td>300</td>
+                                <td>12/05/2022</td>
+                                <td><span class="close">&times;</span></td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>ELAL</td>
+                                <td>12.2569</td>
+                                <td>32.0001241</td>
+                                <td>300</td>
+                                <td>12/05/2022</td>
+                                <td><span class="close">&times;</span></td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>ELAL</td>
+                                <td>12.2569</td>
+                                <td>32.0001241</td>
+                                <td>300</td>
+                                <td>12/05/2022</td>
+                                <td><span class="close">&times;</span></td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>ELAL</td>
+                                <td>12.2569</td>
+                                <td>32.0001241</td>
+                                <td>300</td>
+                                <td>12/05/2022</td>
+                                <td><span class="close">&times;</span></td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+                <!--External Flights Table-->
+                <h3>External Flights</h3>
+                <div id="table-scroll">
+                    <table class="ExternalFlights">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Company</th>
+                                <th>Longitude</th>
+                                <th>Latitude</th>
+                                <th>Passengers</th>
+                                <th>Departure Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>ELAL</td>
+                                <td>12.2569</td>
+                                <td>32.0001241</td>
+                                <td>300</td>
+                                <td>12/05/2022</td>
+                                <td><span class="close">&times;</span></td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>ELAL</td>
+                                <td>12.2569</td>
+                                <td>32.0001241</td>
+                                <td>300</td>
+                                <td>12/05/2022</td>
+                                <td><span class="close">&times;</span></td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>ELAL</td>
+                                <td>12.2569</td>
+                                <td>32.0001241</td>
+                                <td>300</td>
+                                <td>12/05/2022</td>
+                                <td><span class="close">&times;</span></td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>ELAL</td>
+                                <td>12.2569</td>
+                                <td>32.0001241</td>
+                                <td>300</td>
+                                <td>12/05/2022</td>
+                                <td><span class="close">&times;</span></td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>ELAL</td>
+                                <td>12.2569</td>
+                                <td>32.0001241</td>
+                                <td>300</td>
+                                <td>12/05/2022</td>
+                                <td><span class="close">&times;</span></td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>ELAL</td>
+                                <td>12.2569</td>
+                                <td>32.0001241</td>
+                                <td>300</td>
+                                <td>12/05/2022</td>
+                                <td><span class="close">&times;</span></td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>ELAL</td>
+                                <td>12.2569</td>
+                                <td>32.0001241</td>
+                                <td>300</td>
+                                <td>12/05/2022</td>
+                                <td><span class="close">&times;</span></td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>ELAL</td>
+                                <td>12.2569</td>
+                                <td>32.0001241</td>
+                                <td>300</td>
+                                <td>12/05/2022</td>
+                                <td><span class="close">&times;</span></td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Map-->
+    <script type='text/javascript' src='https://www.bing.com/api/maps/mapcontrol?callback=GetMap&key=710BZYiMbjoHEHnwrU58~2rj18XZNNBTW6Ffem4GMmg~Ai2fo-YJNCUlM8JX9RroILMS-sIqscCUrMvFyQZ3v_K_AsGpKyUu1S8ZknzndFgO' async defer></script>
+ 
+
+    <script src="/js/MainWindow.js"></script>
+
+
+</body>
+</html>

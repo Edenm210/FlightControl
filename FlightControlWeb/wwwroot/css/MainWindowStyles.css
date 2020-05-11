@@ -1,0 +1,106 @@
+﻿
+/*
+#myMap {
+    position: fixed;
+    width: 750px;
+    height: 400px;
+    border: 2px solid black;
+}
+*/
+#myMap {
+    height: 450px;
+    border: 2px solid black;
+    margin-bottom: 5px;
+}
+
+#FlightDetailsTable {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+    border: 1px solid black;
+}
+
+
+    #FlightDetailsTable td, #FlightDetailsTable th, #FlightDetailsTable tr {
+        border: 1px solid #ddd;
+        padding: 3px;
+        text-align: center;
+    }
+
+
+
+    #FlightDetailsTable th {
+        background-color: #FB9F82;
+        color: black;
+    }
+
+    #FlightDetailsTable td {
+        font-size: 14px;
+        background-color: #C1BBB7;
+    }
+
+#PositionTable th {
+    background-color: #FFE0BC;
+    color: black;
+    font-size: 10px;
+}
+
+h5 {
+    margin-bottom: 0;
+    background-color: #58595B;
+    padding: 3px;
+    color: white;
+    text-align: center;
+}
+
+h3 {
+    background-color: cornflowerblue;
+    color: white;
+    text-align: center;
+    padding: 5px;
+}
+
+
+h1 {
+    background-color: #00CF91;
+    color: white;
+    padding: 5px;
+}
+
+
+#table-scroll {
+    height: 200px;
+    overflow: auto;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+#table-wrapper {
+    position: relative;
+}
+
+    #table-wrapper table {
+        width: 100%;
+    }
+
+td {
+    width: unset;
+    max-width: 100px;
+    word-wrap: break-word;
+    text-align: center;
+    font-weight: 500;
+}
+
+th {
+    font-size: 14px;
+    word-wrap: break-word;
+    text-align: center;
+    background-color: #DEC0C1;
+}
+
+.close:hover {
+    background: red;
+    color: white;
+}
+
+

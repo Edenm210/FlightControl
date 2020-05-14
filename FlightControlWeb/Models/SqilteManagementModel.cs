@@ -29,7 +29,7 @@ namespace FlightControlWeb.Models
                 {
                     currFlights.Add(new Flight(flightP.Key, currFlight.Initial_Location.Longitude,
                         currFlight.Initial_Location.Latitude, currFlight.Passengers,
-                        currFlight.Company_Name, currTime));
+                        currFlight.Company_Name, currFlight.Initial_Location.Date_Time));
                 }
                 else if (compTime > 0) //flight starts before requested time
                 {
@@ -59,7 +59,8 @@ namespace FlightControlWeb.Models
                 {
 
                     Flight flight = new Flight(id, segments[i].Longitude, segments[i].Latitude,
-                        flightP.Passengers, flightP.Company_Name, currTime);
+                        flightP.Passengers, flightP.Company_Name, 
+                        flightP.Initial_Location.Date_Time);
                     currFlights.Add(flight);
                     return;
                 }
@@ -69,7 +70,8 @@ namespace FlightControlWeb.Models
                     //get the location of the plane
                     Location location = FindLocation(flightP, i, currTime, endTime);
                     Flight flight = new Flight(id, location.Longitude, location.Latitude,
-                        flightP.Passengers, flightP.Company_Name, currTime);
+                        flightP.Passengers, flightP.Company_Name, 
+                        flightP.Initial_Location.Date_Time);
                     currFlights.Add(flight);
                     return;
                 }

@@ -71,15 +71,17 @@ fileSelect.addEventListener("click", function (e) {
     }
 }, false);
 
-/*send the file uploaded to the server*/
+//send the file uploaded to the server
 function handleFiles() {
     let file = fileElem.files[0]; //the flight to upload
     let url = "/api/FlightPlan";
     let xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function () {
         if (this.readyState == 4) { //http sent and answer recieved
-            if (this.status != 200) { //error accured
-                //error accured. need to respond!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            if (this.status == 400) { //error accured
+                showError("error in json file");
+            } else if (this.status != 200) { //different error accured
+                showError("error loading json file");
             }
         }
     };
@@ -92,9 +94,29 @@ function handleFiles() {
         xmlhttp.send(reader.result);
     };
     reader.onerror = function () {
-        //take care of error!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+        showError("error while reading file");
     };
 }
+// end of code that uploads a new flight to the server
+
 /*
-* end of code that uploads a new flight to the server
+ * code that shows errors to the user
 */
+let timer = null;
+
+function showError(error) {
+    let errorTag = document.getElementById("errors");
+    errorTag.style.display = "block";
+    errorTag.innerHTML = error;
+    if (timer != null) {
+        clearTimeout(timer);
+    }
+    timer = setTimeout(removeError, 4000);
+}
+
+function removeError() {
+    let errorTag = document.getElementById("errors");
+    errorTag.style.display = "none";
+    errorTag.innerHTML = "";
+}
+// end of code that shows errors to the user

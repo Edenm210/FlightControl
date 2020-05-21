@@ -3,8 +3,6 @@ let pinsMap = new Map();
 // creating list to store all Flights to present in the tables
 let dict = []
 
-//const pushpins = new Array();
-
 let map;
 
 function GetMap() {

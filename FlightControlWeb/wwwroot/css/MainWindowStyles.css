@@ -1,12 +1,4 @@
 ﻿
-/*
-#myMap {
-    position: fixed;
-    width: 750px;
-    height: 400px;
-    border: 2px solid black;
-}
-*/
 #myMap {
     height: 450px;
     border: 2px solid black;
@@ -84,6 +76,7 @@ h1 {
     }
 
 td {
+    font-size: 12px;
     width: unset;
     max-width: 100px;
     word-wrap: break-word;
@@ -101,6 +94,18 @@ th {
 .close:hover {
     background: red;
     color: white;
+   
+}
+
+.close, close:hover {
+    width: 20px;
+    height: 20px;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align:top;
+   
 }
 
 

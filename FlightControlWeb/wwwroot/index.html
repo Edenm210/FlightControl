@@ -50,19 +50,24 @@
                     </tr>
                     <!--Table content-->
                     <tr>
-                        <td>1 </td>
-                        <td>swiss</td>
+                        <td>216SwissAir32 </td>
+                        <td>swissAir</td>
                         <td>214</td>
-                        <td>34.22322</td>
-                        <td>30.2232</td>
-                        <td>01/08/2020</td>
+                        <td>34.223</td>
+                        <td>30.22</td>
+                        <td>01.08.2020 1:56:21</td>
                         <td>15.222</td>
-                        <td>10.2222</td>
-                        <td>12/08/2020</td>
+                        <td>10.22</td>
+                        <td>01.08.2020 1:56:21 </td>
                     </tr>
                 </table>
             </div>
             <div class="col-md-5" id="table-wrapper">
+                <p id="errors" class="bg-danger text-center mt-0 mb-0 rounded"
+                   style="display:none"></p>
+                <!--to upload new flights-->
+                <input type="file" id="fileElem" style="display:none" accept=".json">
+                <button id="fileSelect" class="btn btn-warning">Upload a new flight</button>
                 <!--My Flights Table-->
                 <h3>My Flights</h3>
                 <div id="table-scroll">
@@ -77,81 +82,7 @@
                                 <th>Departure Date</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>ELAL</td>
-                                <td>12.2569</td>
-                                <td>32.0001</td>
-                                <td>300</td>
-                                <td>12/05/2022</td>
-                                <td><span class="close">&times;</span></td>
-
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>ELAL</td>
-                                <td>12.2569</td>
-                                <td>32.000241</td>
-                                <td>300</td>
-                                <td>12/05/2022</td>
-                                <td><span class="close">&times;</span></td>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>ELAL</td>
-                                <td>12.2569</td>
-                                <td>32.0001241</td>
-                                <td>300</td>
-                                <td>12/05/2022</td>
-                                <td><span class="close">&times;</span></td>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>ELAL</td>
-                                <td>12.2569</td>
-                                <td>32.0001241</td>
-                                <td>300</td>
-                                <td>12/05/2022</td>
-                                <td><span class="close">&times;</span></td>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>ELAL</td>
-                                <td>12.2569</td>
-                                <td>32.0001241</td>
-                                <td>300</td>
-                                <td>12/05/2022</td>
-                                <td><span class="close">&times;</span></td>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>ELAL</td>
-                                <td>12.2569</td>
-                                <td>32.0001241</td>
-                                <td>300</td>
-                                <td>12/05/2022</td>
-                                <td><span class="close">&times;</span></td>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>ELAL</td>
-                                <td>12.2569</td>
-                                <td>32.0001241</td>
-                                <td>300</td>
-                                <td>12/05/2022</td>
-                                <td><span class="close">&times;</span></td>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>ELAL</td>
-                                <td>12.2569</td>
-                                <td>32.0001241</td>
-                                <td>300</td>
-                                <td>12/05/2022</td>
-                                <td><span class="close">&times;</span></td>
-                            </tr>
-
+                        <tbody id="MyFlightsBody">
                         </tbody>
                     </table>
                 </div>
@@ -169,80 +100,7 @@
                                 <th>Departure Date</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>ELAL</td>
-                                <td>12.2569</td>
-                                <td>32.0001241</td>
-                                <td>300</td>
-                                <td>12/05/2022</td>
-                                <td><span class="close">&times;</span></td>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>ELAL</td>
-                                <td>12.2569</td>
-                                <td>32.0001241</td>
-                                <td>300</td>
-                                <td>12/05/2022</td>
-                                <td><span class="close">&times;</span></td>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>ELAL</td>
-                                <td>12.2569</td>
-                                <td>32.0001241</td>
-                                <td>300</td>
-                                <td>12/05/2022</td>
-                                <td><span class="close">&times;</span></td>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>ELAL</td>
-                                <td>12.2569</td>
-                                <td>32.0001241</td>
-                                <td>300</td>
-                                <td>12/05/2022</td>
-                                <td><span class="close">&times;</span></td>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>ELAL</td>
-                                <td>12.2569</td>
-                                <td>32.0001241</td>
-                                <td>300</td>
-                                <td>12/05/2022</td>
-                                <td><span class="close">&times;</span></td>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>ELAL</td>
-                                <td>12.2569</td>
-                                <td>32.0001241</td>
-                                <td>300</td>
-                                <td>12/05/2022</td>
-                                <td><span class="close">&times;</span></td>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>ELAL</td>
-                                <td>12.2569</td>
-                                <td>32.0001241</td>
-                                <td>300</td>
-                                <td>12/05/2022</td>
-                                <td><span class="close">&times;</span></td>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>ELAL</td>
-                                <td>12.2569</td>
-                                <td>32.0001241</td>
-                                <td>300</td>
-                                <td>12/05/2022</td>
-                                <td><span class="close">&times;</span></td>
-                            </tr>
-
+                        <tbody id="ExternalFlightsBody">
                         </tbody>
                     </table>
                 </div>

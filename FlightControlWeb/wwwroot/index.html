@@ -28,9 +28,9 @@
             <div class="col-md-7">
                 <!--Map-->
                 <div id="myMap" onload="GetMap()"></div>
-                <h5>Flight Details</h5>
+                <h5 id="flightDetails" style="display:none">Flight Details</h5>
                 <!--Flight Details Table-->
-                <table id="FlightDetailsTable">
+                <table id="FlightDetailsTable" style="display:none">
                     <tr>
                         <th rowspan="2">ID</th>
                         <th rowspan="2">Company</th>
@@ -47,18 +47,6 @@
                         <!--destination-->
                         <th>longitude</th>
                         <th>latitude</th>
-                    </tr>
-                    <!--Table content-->
-                    <tr>
-                        <td>216SwissAir32 </td>
-                        <td>swissAir</td>
-                        <td>214</td>
-                        <td>34.223</td>
-                        <td>30.22</td>
-                        <td>01.08.2020 1:56:21</td>
-                        <td>15.222</td>
-                        <td>10.22</td>
-                        <td>01.08.2020 1:56:21 </td>
                     </tr>
                 </table>
             </div>
@@ -110,7 +98,7 @@
 
     <!--Map-->
     <script type='text/javascript' src='https://www.bing.com/api/maps/mapcontrol?callback=GetMap&key=710BZYiMbjoHEHnwrU58~2rj18XZNNBTW6Ffem4GMmg~Ai2fo-YJNCUlM8JX9RroILMS-sIqscCUrMvFyQZ3v_K_AsGpKyUu1S8ZknzndFgO' async defer></script>
- 
+
 
     <script src="/js/MainWindow.js"></script>
 

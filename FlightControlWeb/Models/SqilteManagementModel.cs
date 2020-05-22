@@ -69,7 +69,9 @@ namespace FlightControlWeb.Models
                 {
                     //get the location of the plane
                     Location location = FindLocation(flightP, i, currTime, endTime);
-                    Flight flight = new Flight(id, location.Longitude, location.Latitude,
+                    double longitude = Math.Round(location.Longitude, 3);
+                    double latitude = Math.Round(location.Latitude, 3);
+                    Flight flight = new Flight(id, longitude, latitude,
                         flightP.Passengers, flightP.Company_Name, 
                         flightP.Initial_Location.Date_Time);
                     currFlights.Add(flight);

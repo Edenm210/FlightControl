@@ -1,12 +1,4 @@
 ﻿
-/*
-#myMap {
-    position: fixed;
-    width: 750px;
-    height: 400px;
-    border: 2px solid black;
-}
-*/
 #myMap {
     height: 450px;
     border: 2px solid black;
@@ -51,6 +43,7 @@ h5 {
     padding: 3px;
     color: white;
     text-align: center;
+    min-width:525px;
 }
 
 h3 {
@@ -72,7 +65,7 @@ h1 {
     height: 200px;
     overflow: auto;
     margin-bottom: 30px;
-    position: relative;
+    position: static;
 }
 
 #table-wrapper {
@@ -84,11 +77,12 @@ h1 {
     }
 
 td {
+    font-size: 12px;
     width: unset;
     max-width: 100px;
     word-wrap: break-word;
     text-align: center;
-    font-weight: 500;
+    font-weight: 700;
 }
 
 th {
@@ -101,6 +95,23 @@ th {
 .close:hover {
     background: red;
     color: white;
+   
+}
+
+.close, close:hover {
+    width: 20px;
+    height: 20px;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align:top;
+   
+}
+
+
+body {
+    min-width: 1000px;
 }
 
 

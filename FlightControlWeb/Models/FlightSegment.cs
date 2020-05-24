@@ -9,9 +9,16 @@ namespace FlightControlWeb.Models
 {
     public class FlightSegment
     {
+        [Key]
+        [JsonIgnore]
+        public int Id { get; set; }
+        [JsonIgnore]
+        public string FlightId { get; set; }
+        [JsonPropertyName("longitude")]
         public double Longitude { get; set; }
+        [JsonPropertyName("latitude")]
         public double Latitude { get; set; }
         [JsonPropertyName("timespan_seconds")]
-        public int Timespan_Seconds { get; set; }
+        public int TimespanSeconds { get; set; }
     }
 }

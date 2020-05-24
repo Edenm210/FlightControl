@@ -14,24 +14,37 @@ namespace FlightControlWeb.Controllers
     {
         private IDataManagementModel model;
 
-        public FlightPlanController(IDataManagementModel m)
+        public FlightPlanController(Data.DatabaseContext db, IDataManagementModel m)
         {
             this.model = m;
-            //model.AddDatabase(db);
+            model.AddDatabase(db);
         }
 
         // GET: api/FlightPlan/5
         [HttpGet("{id}", Name = "GetFlightPlan")]
-        public FlightPlan Get(string id)
+        public async Task<ActionResult<FlightPlan>> Get(string id)
         {
-            return model.GetFlightPlan(id);
+            // Return null if not found, else return the flight plan.
+            var fp = await model.GetFlightPlan(id);
+            if (fp == null)
+            {
+                return NotFound();
+            }
+            return Ok(fp);
         }
 
         // POST: api/FlightPlan
         [HttpPost]
-        public string Post([FromBody] FlightPlan value)
+        public async Task<ActionResult<string>> Post([FromBody] FlightPlan value)
         {
-            return model.AddFlightPlan(value);
+            // Return "bad repuest" if there were problem with creation (like missing fields),
+            // else return "created" with the id in header and the object in the body. 
+            string response = await model.AddFlightPlan(value);
+            if (response.Equals("bad"))
+            {
+                return BadRequest();
+            }
+            return Created(response, value);
         }
     }
 }

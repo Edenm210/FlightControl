@@ -122,18 +122,7 @@ function loadFlights(json) {
                 "Lat>" + myObj.latitude + "</td>" + "<td>" + myObj.passengers +
                 "</td>" + "<td>" + myObj.date_time + "</td>";
 
-            //External Flight
-            if (myObj.is_external == true) {
-                document.getElementById("ExternalFlightsBody").innerHTML +=
-                    (tableRow + "</tr>");
-            } else {
-                document.getElementById("MyFlightsBody").innerHTML +=
-                    (tableRow + "<td><input type=\"button\" class=\"close\" " +
-                        "value=\"x\" onclick=\"deleteFlight(this,'" +
-                        myObj.flight_id + "')\" onmouseover=\"onDeleteButton('" +
-                        myObj.flight_id +
-                        "')\" onmouseout=\"OffDeleteButton()\"></td ></tr > ");
-            }
+            updateTableRow(myObj, tableRow);
         }
     }
 
@@ -144,17 +133,36 @@ function loadFlights(json) {
         let exists = flightIdFromResponse.includes(flightId);
 
         if (!exists) {
-            if ((flightShowing != null) && (flightId == flightShowing.id)) {
-                stopShowingFlightPlan();
-            }
-            let row = document.getElementById(flightId);
-            // removing flight row from the table
-            row.parentNode.removeChild(row);
-            // removing the flight pin
-            map.entities.remove(dict[flightId]);
-            // removing flight from dictionary
-            delete dict[flightId];
+            flightFinished(flightId);
         }
+    }
+}
+
+function flightFinished(flightId) {
+    if ((flightShowing != null) && (flightId == flightShowing.id)) {
+        stopShowingFlightPlan();
+    }
+    let row = document.getElementById(flightId);
+    // removing flight row from the table
+    row.parentNode.removeChild(row);
+    // removing the flight pin
+    map.entities.remove(dict[flightId]);
+    // removing flight from dictionary
+    delete dict[flightId];
+}
+
+function updateTableRow(myFlightObj, tableRow) {
+    //External Flight
+    if (myFlightObj.is_external == true) {
+        document.getElementById("ExternalFlightsBody").innerHTML +=
+            (tableRow + "</tr>");
+    } else {
+        document.getElementById("MyFlightsBody").innerHTML +=
+            (tableRow + "<td><input type=\"button\" class=\"close\" " +
+                "value=\"x\" onclick=\"deleteFlight(this,'" +
+            myFlightObj.flight_id + "')\" onmouseover=\"onDeleteButton('" +
+                myFlightObj.flight_id +
+                "')\" onmouseout=\"OffDeleteButton()\"></td ></tr > ");
     }
 }
 
@@ -186,12 +194,17 @@ function graphicChange(pin) {
     //highlight the row of the flight in the table
     let elm = document.getElementById(pin.id);
     elm.className += "bg-info";
-    changeIcon(pin, 0.6); //make flight icon bigger
+    changeIcon("start", pin, 0.6); //make flight icon bigger and change color
 }
 
 //change the size of the flight icon
-function changeIcon(pin, scale) {
-    let imgUrl = "/Images/airplane1.png";
+function changeIcon(status, pin, scale) {
+    let imgUrl;
+    if (status == "start") {
+        imgUrl = "/Images/airplaneClicked.png";
+    } else {
+        imgUrl = "/Images/airplane1.png";
+    }
     let img = new Image();
     img.onload = function () {
         let c = document.createElement("canvas");
@@ -246,10 +259,9 @@ function addToMap(flightPlan) {
 
 //add flight details to the details table and show the table
 function addFlightDetails(flightPlan, flightId) {
-    document.getElementById("flightDetails").style.display = "block";
-    document.getElementById("FlightDetailsTable").style.display = "block";
+    document.getElementById("flightDetails").style.display = "";
+    document.getElementById("FlightDetailsTable").style.display = "";
     let table = document.getElementById("FlightDetailsTable");
-    table.style.display = "block";
     let row = table.insertRow(-1);
     let cell1 = row.insertCell(0);
     cell1.innerHTML = flightId;
@@ -281,7 +293,6 @@ function addFlightDetails(flightPlan, flightId) {
     let cell9 = row.insertCell(8);
     cell9.innerHTML = arrivalTime.toUTCString();
 }
-
 //remove all additions to page involving the flight shown
 function stopShowingFlightPlan() {
     if (flightShowing != null) {
@@ -303,8 +314,8 @@ function stopShowingFlightPlan() {
         //stop highlighting the row in the table
         let element = document.getElementById(flightShowing.id);
         element.classList.remove("bg-info");
-        //make the plane icon smaller
-        changeIcon(flightShowing, 0.35);
+        //make the plane icon smaller and change back color
+        changeIcon("stop", flightShowing, 0.35);
         flightShowing = null;
     }
 }

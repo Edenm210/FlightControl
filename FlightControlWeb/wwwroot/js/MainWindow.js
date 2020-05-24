@@ -214,9 +214,9 @@ function changeIcon(status, pin, scale) {
         //Draw scaled image
         context.drawImage(img, 0, 0, c.width, c.height);
         pin.setOptions({
-            icon: c.toDataURL(),
+            icon: c.toDataURL()
         });
-    }
+    };
     img.src = imgUrl;
 }
 
@@ -247,7 +247,7 @@ function addToMap(flightPlan) {
     //first point is initial point
     let location2 = new Microsoft.Maps.Location(flightPlan.initial_location.
         latitude, flightPlan.initial_location.longitude);
-    for (i = 0; i < flightPlan.segments.length; i++) {
+    for (i = 0; i < flightPlan.segments.length; i+=1) {
         location1 = location2;
         location2 = new Microsoft.Maps.Location(flightPlan.segments[i].
             latitude, flightPlan.segments[i].longitude);
@@ -280,7 +280,7 @@ function addFlightDetails(flightPlan, flightId) {
     let arrivalTime = new Date(flightPlan.initial_location.date_time);
     let timePassed = 0;
     let i = 0;
-    for (i; i < flightPlan.segments.length; i++) {
+    for (i; i < flightPlan.segments.length; i+=1) {
         timePassed += flightPlan.segments[i].timespan_seconds;
     }
     timePassed *= 1000; //miliseconds passed
@@ -297,7 +297,7 @@ function addFlightDetails(flightPlan, flightId) {
 function stopShowingFlightPlan() {
     if (flightShowing != null) {
         //remove lines from the map
-        for (let i = map.entities.getLength() - 1; i >= 0; i--) {
+        for (i = map.entities.getLength() - 1; i >= 0; i-=1) {
             let polyline = map.entities.get(i);
             if (polyline instanceof Microsoft.Maps.Polyline) {
                 map.entities.removeAt(i);
@@ -357,8 +357,8 @@ function deleteFlightFromDB(flightId) {
 /*
  * code that uploads a new flight to the server
  */
-const fileSelect = document.getElementById("fileSelect"),
-    fileElem = document.getElementById("fileElem");
+const fileSelect = document.getElementById("fileSelect");
+const fileElem = document.getElementById("fileElem");
 fileElem.addEventListener("change", handleFiles, false);
 
 /*when the button is pushed, it calls the event that the fileElem button was

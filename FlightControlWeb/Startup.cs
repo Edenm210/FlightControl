@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -15,9 +16,15 @@ namespace FlightControlWeb
 {
     public class Startup
     {
+        public Data.DatabaseContext db;
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            using (db = new Data.DatabaseContext())
+            {
+                db.Database.EnsureCreated();
+                db.Database.Migrate();
+            };
         }
 
         public IConfiguration Configuration { get; }
@@ -27,6 +34,7 @@ namespace FlightControlWeb
         {
             services.AddRouting();
             services.AddControllers();
+            services.AddEntityFrameworkSqlite().AddDbContext<Data.DatabaseContext>();
             services.AddSingleton(typeof(Models.IDataManagementModel), typeof(Models.SqilteManagementModel));
         }
 
@@ -38,6 +46,7 @@ namespace FlightControlWeb
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseDefaultFiles();
             app.UseStaticFiles();
 
             app.UseHttpsRedirection();

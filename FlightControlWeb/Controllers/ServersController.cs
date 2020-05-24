@@ -14,31 +14,50 @@ namespace FlightControlWeb.Controllers
     {
         private IDataManagementModel model;
 
-        public ServersController(IDataManagementModel m)
+        public ServersController(Data.DatabaseContext db, IDataManagementModel m)
         {
             this.model = m;
-            //model.AddDatabase(db);
+            model.AddDatabase(db);
         }
 
         // GET: api/Servers
         [HttpGet]
-        public List<Server> GetAllServers()
+        public async Task<ActionResult<List<Server>>> GetAllServers()
         {
-            return model.GetAllServers();
+            // Return "no content" if there were no servers.
+            var servers = await model.GetAllServers();
+            if (servers == null)
+            {
+                return NoContent();
+            }
+            return Ok(servers);
         }
 
         // POST: api/Servers
         [HttpPost]
-        public void Post([FromBody] Server value)
+        public async Task<ActionResult> Post([FromBody] Server value)
         {
-            model.AddServer(value);
+            // Return "bad request" if there were problem with creation (like missing fields),
+            // else return "created" with server id in header. 
+            string response = await model.AddServer(value);
+            if (response.Equals("bad"))
+            {
+                return BadRequest();
+            }
+            return Created(response, value);
         }
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
-        public void Delete(string id)
+        public async Task<ActionResult> Delete(string id)
         {
-            model.DeleteServer(id);
+            // Return "not found" if couldn't find the server.
+            bool response = await model.DeleteServer(id);
+            if (response == false)
+            {
+                return NotFound();
+            }
+            return Ok();
         }
     }
 }

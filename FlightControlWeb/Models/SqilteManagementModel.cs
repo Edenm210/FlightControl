@@ -1,94 +1,138 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Text.Json.Serialization;
 
 namespace FlightControlWeb.Models
 {
     public class SqilteManagementModel : IDataManagementModel
     {
-        public static Dictionary<string, FlightPlan> FlightPlans;
-        public static Dictionary<string, Server> Servers;
+        private Data.DatabaseContext database;
+        private HttpClient client;
+        Dictionary<string, string> flightsWithServers;
+        int flag;
 
-        public SqilteManagementModel()
+        public SqilteManagementModel(/*DatabaseContext db*/)
         {
-            FlightPlans = new Dictionary<string, FlightPlan>();
-            Servers = new Dictionary<string, Server>();
+            //database = db;
+            client = new HttpClient();
+            flightsWithServers = new Dictionary<string, string>();
+            flag = 0;
+            //LoadDictionaryFromDB();
+        }
+
+        // Load all tha flight's ids and servers from db.
+        private void LoadDictionaryFromDB()
+        {
+            var flightWithServers = database.LoadAllFlightsWithServers();
+            if (flightWithServers != null)
+            {
+                foreach (FlightWithServer flight in flightWithServers)
+                {
+                    flightsWithServers.Add(flight.FlightId, flight.ServerURL);
+                }
+            }
+        }
+
+        public void AddDatabase(Data.DatabaseContext db)
+        {
+            database = db;
+            if (flag == 0)
+            {
+                LoadDictionaryFromDB();
+                flag++;
+            }
         }
 
         // Return a list of all the active flights in this server.
-        public List<Flight> GetFlights(DateTime currTime)
+        public async Task<List<Flight>> GetFlights(DateTime currTime)
         {
-            List<Flight> currFlights = new List<Flight>();
-            foreach (KeyValuePair<string, FlightPlan> flightP in FlightPlans)
+            var flightPlans = await database.GetAllFlightPlans();
+            var currFlights = new List<Flight>();
+            if (flightPlans == null)
             {
-                FlightPlan currFlight = flightP.Value;
-                //compare the starting time of the flight with the given time
-                int compTime = DateTime.Compare(currTime, currFlight.Initial_Location.Date_Time);
-                if (compTime == 0) //starting time is exactly the given time
+                return null;
+            }
+            foreach (FlightPlan currFlight in flightPlans)
+            {
+                // Compare the starting time of the flight with the given time.
+                int compTime = DateTime.Compare(currTime, currFlight.InitialLocation.DateTime);
+                // Starting time is exactly the given time.
+                if (compTime == 0)
                 {
-                    currFlights.Add(new Flight(flightP.Key, currFlight.Initial_Location.Longitude,
-                        currFlight.Initial_Location.Latitude, currFlight.Passengers,
-                        currFlight.Company_Name, currTime));
+                    currFlights.Add(new Flight(currFlight.FlightId,
+                        currFlight.InitialLocation.Longitude,
+                        currFlight.InitialLocation.Latitude, currFlight.Passengers,
+                        currFlight.CompanyName, currFlight.InitialLocation.DateTime));
                 }
-                else if (compTime > 0) //flight starts before requested time
+                // Flight starts before requested time.
+                else if (compTime > 0)
                 {
-                    IsCurrFlight(currTime, currFlight, flightP.Key, currFlights);
+                    IsCurrFlight(currTime, currFlight, currFlights);
                 }
             }
             return currFlights;
         }
 
         /*
-         * find the segment of the flight where the plane is at the given time and add an 
+         * Find the segment of the flight where the plane is at the given time and add an 
          * approriate Flight object to the list.
-         * if the flight ends before the given time will add nothing
+         * If the flight ends before the given time will add nothing.
          */
-        private void IsCurrFlight(DateTime currTime, FlightPlan flightP, string id,
-            List<Flight> currFlights)
+        private void IsCurrFlight(DateTime currTime, FlightPlan flightP, List<Flight> currFlights)
         {
-            List<FlightSegment> segments = flightP.Segments;
-            DateTime endTime = flightP.Initial_Location.Date_Time;
-            int numOfSegments = segments.Count; //number of segments for this flight
+            var segments = flightP.Segments;
+            var endTime = flightP.InitialLocation.DateTime;
+            // Number of segments for this flight.
+            int numOfSegments = segments.Count;
             for (int i = 0; i < numOfSegments; i++)
             {
-                //add to filght time the time spent in this segment
-                endTime = endTime.AddSeconds(segments[i].Timespan_Seconds);
+                // Add to filght time the time spent in this segment.
+                endTime = endTime.AddSeconds(segments[i].TimespanSeconds);
                 int compTime = DateTime.Compare(currTime, endTime);
-                if (compTime == 0) //finished the segment at the given time
+                // Finished the segment at the given time.
+                if (compTime == 0)
                 {
-
-                    Flight flight = new Flight(id, segments[i].Longitude, segments[i].Latitude,
-                        flightP.Passengers, flightP.Company_Name, currTime);
+                    var flight = new Flight(flightP.FlightId, segments[i].Longitude,
+                        segments[i].Latitude, flightP.Passengers, flightP.CompanyName,
+                        flightP.InitialLocation.DateTime);
                     currFlights.Add(flight);
                     return;
                 }
-                //the flight is in the middle of this segment at the time requested
+                // The flight is in the middle of this segment at the time requested.
                 else if (compTime < 0)
                 {
-                    //get the location of the plane
-                    Location location = FindLocation(flightP, i, currTime, endTime);
-                    Flight flight = new Flight(id, location.Longitude, location.Latitude,
-                        flightP.Passengers, flightP.Company_Name, currTime);
+                    // Get the location of the plane.
+                    var location = FindLocation(flightP, i, currTime, endTime);
+                    double longitude = Math.Round(location.Longitude, 3);
+                    double latitude = Math.Round(location.Latitude, 3);
+                    var flight = new Flight(flightP.FlightId, longitude, latitude,
+                    flightP.Passengers, flightP.CompanyName, flightP.InitialLocation.DateTime);
                     currFlights.Add(flight);
                     return;
                 }
             }
-            //if reached this line the flight ended before the given time
+            // If reached this line the flight ended before the given time.
         }
 
         /*
-         * calculate the location of the plane in the current segment and return an object with 
-         * the location
+         * Calculate the location of the plane in the current segment and return an object with 
+         * the location.
          */
         private Location FindLocation(FlightPlan flightP, int currSegment, DateTime currTime,
             DateTime endTime)
         {
             Location prevLocation;
-            if (currSegment == 0) //flight is in the first segment at the requested time
+            // Flight is in the first segment at the requested time.
+            if (currSegment == 0)
             {
-                prevLocation = new Location(flightP.Initial_Location.Longitude,
-                    flightP.Initial_Location.Latitude);
+                prevLocation = new Location(flightP.InitialLocation.Longitude,
+                    flightP.InitialLocation.Latitude);
             }
             else
             {
@@ -96,83 +140,238 @@ namespace FlightControlWeb.Models
                     flightP.Segments[currSegment - 1].Latitude);
             }
 
-            FlightSegment segment = flightP.Segments[currSegment];
-            //the difference between the end time of the segment and the time that we need
+            var segment = flightP.Segments[currSegment];
+            // The difference between the end time of the segment and the time that we need.
             double diffInSeconds = (endTime - currTime).TotalSeconds;
-            //total time spent in the segment
-            double timePassed = segment.Timespan_Seconds - diffInSeconds;
-            //the relative amount of the segment that the plane passed
-            double proportion = timePassed / segment.Timespan_Seconds;
-            double longiLen = segment.Longitude - prevLocation.Longitude; //total longitude length of the segment
-            double longiPassed = proportion * longiLen; //longitued length passed
-            double currLongi = prevLocation.Longitude + longiPassed; //new longitude location
-            double latiLen = segment.Latitude - prevLocation.Latitude; //total latitude length of the segment
-            double latiPassed = proportion * latiLen; //latitude length passed
-            double currLati = prevLocation.Latitude + latiPassed; //new latitude location
+            // Total time spent in the segment.
+            double timePassed = segment.TimespanSeconds - diffInSeconds;
+            // The relative amount of the segment that the plane passed.
+            double proportion = timePassed / segment.TimespanSeconds;
+            // Total longitude length of the segment.
+            double longiLen = segment.Longitude - prevLocation.Longitude;
+            // Longitued length passed.
+            double longiPassed = proportion * longiLen;
+            // New longitude location.
+            double currLongi = prevLocation.Longitude + longiPassed;
+            // Total latitude length of the segment.
+            double latiLen = segment.Latitude - prevLocation.Latitude;
+            // Latitude length passed.
+            double latiPassed = proportion * latiLen;
+            // New latitude location.
+            double currLati = prevLocation.Latitude + latiPassed;
             return new Location(currLongi, currLati);
         }
 
         // Return a list of all the active flights in all the servers. 
-        public List<Flight> GetAllFlights(DateTime currTime)
+        public async Task<List<Flight>> GetAllFlights(DateTime currTime)
         {
-            return GetFlights(currTime);
+            string time = currTime.ToString("yyyy-MM-ddTHH:mm:ssZ");
+            var servers = await database.GetServers();
+            var allFlights = new List<Flight>();
+            int flag = 0;
+            // Add the flights from our db, according to current time.
+            var flightsFromDb = await GetFlights(currTime);
+            if (flightsFromDb != null)
+            {
+                allFlights.AddRange(flightsFromDb);
+            }
+            if (servers == null)
+            {
+                return allFlights;
+            }
+            // Get the flights from the servers.
+            foreach (Server server in servers)
+            {
+                string url = server.ServerURL;
+                try
+                {
+                    // Connecting to servers.
+                    HttpResponseMessage response = await client
+                        .GetAsync(url + "/api/Flights?relative_to=" + time);
+                    response.EnsureSuccessStatusCode();
+                    string responseBody = await response.Content.ReadAsStringAsync();
+                    // Convert response to flight plan object.
+                    List<Flight> flights = JsonConvert
+                        .DeserializeObject<List<Flight>>(responseBody);
+                    // Add to dictionary and db new flights, and change is_external.
+                    flag += await UpdateChanges(flights, url);
+                    // Add the flights to the list.
+                    allFlights.AddRange(flights);
+                }
+                catch (Exception e)
+                {
+                    // Change flag so we will know that somthing went wrong.
+                    Console.WriteLine("\nException Caught!");
+                    Console.WriteLine("Message :{0} ", e.Message);
+                    flag++;
+                }
+            }
+            // Somthing went wrong with some of the flights or servers.
+            if (flag != 0)
+            {
+                allFlights.Insert(0, new Flight { FlightId = "bad" });
+            }
+            return allFlights;
+        }
+
+        /* 
+         * Add the new flight with their server to dictionary and data base,
+         * And change is_external to true.
+         */
+        private async Task<int> UpdateChanges(List<Flight> flights, string url)
+        {
+            int flag = 0;
+            var newFlights = new List<FlightWithServer>();
+            var flightFromServer = new List<Flight>(flights);
+            if (flights == null)
+            {
+                return 0;
+            }
+            foreach (Flight flight in flightFromServer)
+            {
+                // Check if the json has all the needed fields.
+                if (flight.FlightId == null ||
+                    flight.Passengers == 0 ||
+                    flight.CompanyName == null)
+                {
+                    // Invalid flight so we remove it, change flag so we will know that
+                    // not all the flights were valid and continue to the next.
+                    flights.Remove(flight);
+                    flag++;
+                    continue;
+                }
+                // Valid flight- we add (if dont exist) it's id and serverURL to dictionart and db,
+                // and change is_external to true.
+                flight.IsExternal = true;
+                if (!flightsWithServers.ContainsKey(flight.FlightId))
+                {
+                    flightsWithServers.Add(flight.FlightId, url);
+                    newFlights.Add(new FlightWithServer
+                    {
+                        FlightId = flight.FlightId,
+                        ServerURL = url
+                    });
+                }
+            }
+            await database.AddFlightsFromServers(newFlights);
+            return flag;
         }
 
         // Add Flight Plan to database and return the unique id.
-        public string AddFlightPlan(FlightPlan fp)
+        public async Task<string> AddFlightPlan(FlightPlan flightPlan)
         {
-            string id = GetUniqueId(fp);
-            FlightPlans.Add(id, fp);
-            return id;
+            // Check if the object has all the needed fields.
+            if (flightPlan == null)
+            {
+                return "bad";
+            }
+            if (flightPlan.Passengers == 0)
+            {
+                return "bad";
+            }
+            if (flightPlan.CompanyName == null)
+            {
+                return "bad";
+            }
+            if (flightPlan.Segments == null)
+            {
+                return "bad";
+            }
+            if (flightPlan.InitialLocation == null)
+            {
+                return "bad";
+            }
+            // if the initial location is empty but not null it's fields will have default values.
+            return await database.AddFlightPlan(flightPlan);
         }
 
         // Return the flight plan with this id.
-        public FlightPlan GetFlightPlan(string id)
+        public async Task<FlightPlan> GetFlightPlan(string id)
         {
-            try
+            // Check if the flight plan is from other servers.
+            if (flightsWithServers.ContainsKey(id))
             {
-                FlightPlan fp = FlightPlans[id];
-                return fp;
-            } 
-            catch(KeyNotFoundException)
+                // Get the server url from the dictionary.
+                string url = flightsWithServers[id];
+                try
+                {
+                    // Get the flight plan from the server.
+                    HttpResponseMessage response = await client
+                        .GetAsync(url + "/api/FlightPlan/" + id);
+                    response.EnsureSuccessStatusCode();
+                    string responseBody = await response.Content.ReadAsStringAsync();
+                    // Convert response to flight plan object.
+                    return JsonConvert.DeserializeObject<FlightPlan>(responseBody);
+                }
+                catch (Exception)
+                {
+                    // Problem with find the flight plan. 
+                    return null;
+                }
+            }
+            // Find the flight plan from my database. if couldn't find, null will be sent.
+            else
             {
-                return null;
+                return await database.GetFlightPlan(id);
             }
         }
 
         // Delete the flight plan with this id.
-        public void DeleteFlight(string id)
+        public async Task<bool> DeleteFlight(string id)
         {
-            FlightPlans.Remove(id);
+            // If couldn't find the flight false will be sent.
+            return await database.DeleteFlightPlan(id);
         }
 
-        // Return a list of all the servers that we use.
-        public List<Server> GetAllServers()
+        // Return a list of all the servers that we use, if there aren't any return null.
+        public async Task<List<Server>> GetAllServers()
         {
-            Server s = new Server { ServerId = "14", ServerURL = "www" };
-            List<Server> allservers =  new List<Server>();
-            foreach (KeyValuePair<string, Server> serv in Servers)
-            {
-                allservers.Add(serv.Value);
-            }
-            return allservers; 
+            return await database.GetServers();
         }
 
         // Add a server.
-        public void AddServer(Server server)
+        public async Task<string> AddServer(Server server)
         {
-            Servers.Add(server.ServerId, server);
+            // Check if the object has all the needed fields.
+            if (server.ServerId == null)
+            {
+                return "bad";
+            }
+            if (server.ServerURL == null)
+            {
+                return "bad";
+            }
+            await database.AddServer(server);
+            return server.ServerId;
         }
 
         // Delete a server.
-        public void DeleteServer(string id)
+        public async Task<bool> DeleteServer(string id)
         {
-            Servers.Remove(id);
+            // Return true if found the server and deleted it, else false.
+            Server s = await database.GetServer(id);
+            // Delete the flight's ids from that server.
+            if (s != null)
+            {
+                await DeleteServerFlights(s.ServerURL);
+                return await database.DeleteServer(id);
+            }
+            return false;
         }
 
-        private string GetUniqueId(FlightPlan fp)
+        // Update the dictionary and db when server has been deleted.
+        private async Task DeleteServerFlights(string url)
         {
-            return fp.Passengers.ToString() + fp.Company_Name + fp.Initial_Location.Latitude.ToString();
+            // Delete the flights that are from that server in dictionary.
+            foreach (KeyValuePair<string, string> flight in flightsWithServers)
+            {
+                if (flightsWithServers.ContainsValue(url))
+                {
+                    flightsWithServers.Remove(flight.Key);
+                }
+            }
+            // Do the same for the db.
+            await database.DeleteFlightsFromServer(url);
         }
     }
 }

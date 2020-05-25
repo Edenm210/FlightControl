@@ -55,7 +55,7 @@ function sendFlightsRequest() {
     let currentDate = new Date();
     /// cutting the last chars of the seconds
     let dateStr = (currentDate.toISOString().slice(0, 19) + "Z");
-    // builting the GET request - to get all flights
+    // building the GET request - to get all flights
     let requestStr = "/api/Flights?relative_to=" + dateStr + "&sync_all";
 
     let xhttp = new XMLHttpRequest();

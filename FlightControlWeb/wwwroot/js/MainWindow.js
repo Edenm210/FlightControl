@@ -49,7 +49,7 @@ function creatingPushpin(location, imgUrl, scale, callback) {
 */
 
 // sync every second
-let syncLoop = setInterval(sendFlightsRequest, 1000);
+let syncLoop = setInterval(sendFlightsRequest, 3000);
 
 function sendFlightsRequest() {
     let currentDate = new Date();

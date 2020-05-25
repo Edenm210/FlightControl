@@ -7,14 +7,14 @@ namespace FlightControlWeb.Models
 {
     public interface IDataManagementModel
     {
-        //public void AddDatabase(Data.DatabaseContext db);
-        List<Flight> GetFlights(DateTime currTime);
-        List<Flight> GetAllFlights(DateTime currTime);
-        string AddFlightPlan(FlightPlan fp);
-        FlightPlan GetFlightPlan(string id);
-        void DeleteFlight(string id);
-        List<Server> GetAllServers();
-        void AddServer(Server server);
-        void DeleteServer(string id);
+        void AddDatabase(Data.DatabaseContext db);
+        Task<List<Flight>> GetFlights(DateTime currTime);
+        Task<List<Flight>> GetAllFlights(DateTime currTime);
+        Task<string> AddFlightPlan(FlightPlan flightPlan);
+        Task<FlightPlan> GetFlightPlan(string id);
+        Task<bool> DeleteFlight(string id);
+        Task<List<Server>> GetAllServers();
+        Task<string> AddServer(Server server);
+        Task<bool> DeleteServer(string id);
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FlightControlWeb.Data;
 using FlightControlWeb.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -26,6 +27,8 @@ namespace FlightControlWeb.Controllers
         {
             // Return null if not found, else return the flight plan.
             var fp = await model.GetFlightPlan(id);
+           // Console.WriteLine("Passengers: {0}, Company name: {1}, longi: {2}, lati: {3}, date: {4}", fp.Passengers, fp.CompanyName,
+           //     fp.InitialLocation.Longitude, fp.InitialLocation.Latitude, fp.InitialLocation.DateTime.ToString("yyyy-MM-ddTHH:mm:ssZ"));
             if (fp == null)
             {
                 return NotFound();

@@ -56,13 +56,13 @@ function sendFlightsRequest() {
     /// cutting the last chars of the seconds
     let dateStr = (currentDate.toISOString().slice(0, 19) + "Z");
     // builting the GET request - to get all flights
-    let requestStr = "/api/Flights?relative_to=" + dateStr + "&sync_all";
+    let requestStr = "/api/Flights?relative_to=" + "2020-05-21T03:45:00Z" + "&sync_all";
 
     let xhttp = new XMLHttpRequest();
     // when the state of the request changes
     xhttp.onreadystatechange = function () {
         if (this.readyState == 4) { // http request is DONE
-            if (this.status == 200) {
+            if (this.status == 200 || this.status == 400) {
                 loadFlights(xhttp.responseText);
             } else {
                 showError("Failed getting data from server");

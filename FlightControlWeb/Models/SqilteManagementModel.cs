@@ -7,22 +7,23 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Text.Json.Serialization;
+using FlightControlWeb.Data;
 
 namespace FlightControlWeb.Models
 {
     public class SqilteManagementModel : IDataManagementModel
     {
-        private Data.DatabaseContext database;
+        private IDatabaseContext database;
         private HttpClient client;
         Dictionary<string, string> flightsWithServers;
-        int flag;
+        int flagg;
 
         public SqilteManagementModel(/*DatabaseContext db*/)
         {
-            //database = db;
+            //database = new DatabaseContext();
             client = new HttpClient();
             flightsWithServers = new Dictionary<string, string>();
-            flag = 0;
+            flagg = 0;
             //LoadDictionaryFromDB();
         }
 
@@ -39,13 +40,13 @@ namespace FlightControlWeb.Models
             }
         }
 
-        public void AddDatabase(Data.DatabaseContext db)
+        public void AddDatabase(IDatabaseContext db)
         {
             database = db;
-            if (flag == 0)
+            if (flagg == 0)
             {
                 LoadDictionaryFromDB();
-                flag++;
+                flagg++;
             }
         }
 
@@ -300,12 +301,15 @@ namespace FlightControlWeb.Models
                         .GetAsync(url + "/api/FlightPlan/" + id);
                     response.EnsureSuccessStatusCode();
                     string responseBody = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine(responseBody);
                     // Convert response to flight plan object.
                     return JsonConvert.DeserializeObject<FlightPlan>(responseBody);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
                     // Problem with find the flight plan. 
+                    Console.WriteLine("\nException Caught!");
+                    Console.WriteLine("Message :{0} ", e.Message);
                     return null;
                 }
             }

@@ -1,6 +1,4 @@
-﻿// creating dictionary to store all Flights to present in the map
-let pinsMap = new Map();
-// creating list to store all Flights to present in the tables
+﻿// creating list to store all Flights to present in the tables
 let dict = [];
 let map;
 let flightShowing = null;
@@ -34,7 +32,7 @@ function creatingPushpin(location, imgUrl, scale, callback) {
             icon: c.toDataURL(),
 
             //Anchor the image.
-            anchor: new Microsoft.Maps.Point(c.width / 2, c.height)
+            anchor: new Microsoft.Maps.Point(c.width / 2, c.height/2)
         });
 
         if (callback) {
@@ -194,7 +192,7 @@ function graphicChange(pin) {
     //highlight the row of the flight in the table
     let elm = document.getElementById(pin.id);
     elm.className += "bg-info";
-    changeIcon("start", pin, 0.6); //make flight icon bigger and change color
+    changeIcon("start", pin, 0.4); //make flight icon bigger and change color
 }
 
 //change the size of the flight icon
@@ -214,7 +212,9 @@ function changeIcon(status, pin, scale) {
         //Draw scaled image
         context.drawImage(img, 0, 0, c.width, c.height);
         pin.setOptions({
-            icon: c.toDataURL()
+            icon: c.toDataURL(),
+            anchor: new Microsoft.Maps.Point(c.width / 2, c.height / 2)
+
         });
     };
     img.src = imgUrl;

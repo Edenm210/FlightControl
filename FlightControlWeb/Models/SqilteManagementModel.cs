@@ -7,12 +7,13 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Text.Json.Serialization;
+using FlightControlWeb.Data;
 
 namespace FlightControlWeb.Models
 {
     public class SqilteManagementModel : IDataManagementModel
     {
-        private Data.DatabaseContext database;
+        private IDatabaseContext database;
         private HttpClient client;
         Dictionary<string, string> flightsWithServers;
         int flag;
@@ -39,7 +40,7 @@ namespace FlightControlWeb.Models
             }
         }
 
-        public void AddDatabase(Data.DatabaseContext db)
+        public void AddDatabase(IDatabaseContext db)
         {
             database = db;
             if (flag == 0)

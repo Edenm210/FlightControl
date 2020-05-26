@@ -12,7 +12,8 @@ namespace FlightControlWeb.Models
     {
         public Flight() { }
 
-        public Flight(string flightId, double longi, double lati, int numPassingers, string companyName, DateTime time)
+        public Flight(string flightId, double longi, double lati, int numPassingers, 
+            string companyName, DateTime time)
         {
             FlightId = flightId;
             Longitude = longi;

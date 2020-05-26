@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FlightControlWeb.Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,7 +8,7 @@ namespace FlightControlWeb.Models
 {
     public interface IDataManagementModel
     {
-        void AddDatabase(Data.DatabaseContext db);
+        void AddDatabase(IDatabaseContext db);
         Task<List<Flight>> GetFlights(DateTime currTime);
         Task<List<Flight>> GetAllFlights(DateTime currTime);
         Task<string> AddFlightPlan(FlightPlan flightPlan);

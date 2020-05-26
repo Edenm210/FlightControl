@@ -1,6 +1,4 @@
-﻿// creating dictionary to store all Flights to present in the map
-let pinsMap = new Map();
-// creating list to store all Flights to present in the tables
+﻿// creating list to store all Flights to present in the tables
 let dict = [];
 let map;
 let flightShowing = null;
@@ -378,7 +376,7 @@ function handleFiles() {
         if (this.readyState == 4) { //http sent and answer recieved
             if (this.status == 400) { //error accured
                 showError("error in json file");
-            } else if (this.status != 200) { //different error accured
+            } else if (this.status != 201) { //different error accured
                 showError("error loading json file");
             }
         }

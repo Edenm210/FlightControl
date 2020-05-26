@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace FlightControlWeb.Data
 {
-    public class DatabaseContext : DbContext
+    public class DatabaseContext : DbContext, IDatabaseContext
     {
         public DbSet<FlightPlan> FlightPlans { get; set; }
         public DbSet<Server> Servers { get; set; }

@@ -18,10 +18,9 @@ namespace UnitTestFlightPlan
         public void Test1GetFlights()
         {
             // Arrange
-            var stubDB = new StubDB();
-            SqilteManagementModel model = new SqilteManagementModel();
+            IDatabaseContext stubDB = new StubDB();
             LoadFlights(stubDB);
-            model.AddDatabase(stubDB);
+            SqilteManagementModel model = new SqilteManagementModel(stubDB);
             
 
             //Act
@@ -42,10 +41,9 @@ namespace UnitTestFlightPlan
         public void Test2GetFlights()
         {
             // Arrange
-            var stubDB = new StubDB();
-            SqilteManagementModel model = new SqilteManagementModel();
+            IDatabaseContext stubDB = new StubDB();
             LoadFlights(stubDB);
-            model.AddDatabase(stubDB);
+            SqilteManagementModel model = new SqilteManagementModel(stubDB);
 
             //Act
             var dt = new DateTime(2020, 1, 1, 11, 00, 00, DateTimeKind.Utc); //2020-01-01T10:00:00Z

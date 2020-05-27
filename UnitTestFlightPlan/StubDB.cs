@@ -22,7 +22,7 @@ namespace UnitTestFlightPlan
             throw new NotImplementedException();
         }
 
-        public Task AddServer(Server server)
+        public Task<bool> AddServer(Server server)
         {
             throw new NotImplementedException();
         }
@@ -68,6 +68,11 @@ namespace UnitTestFlightPlan
         public List<FlightWithServer> LoadAllFlightsWithServers()
         {
             return new List<FlightWithServer>();
+        }
+
+        public Task<string> GetServerOfFlight(string id)
+        {
+            throw new NotImplementedException();
         }
     }
 }

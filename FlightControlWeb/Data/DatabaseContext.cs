@@ -4,26 +4,24 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace FlightControlWeb.Data
 {
     public class DatabaseContext : DbContext, IDatabaseContext
     {
+
         public DbSet<FlightPlan> FlightPlans { get; set; }
         public DbSet<Server> Servers { get; set; }
         public DbSet<InitialFlightLocation> InitialFlightLocations { get; set; }
         public DbSet<FlightSegment> FlightSegments { get; set; }
         public DbSet<FlightWithServer> FlightWithServer { get; set; }
 
+        
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            var connectionStringBuilder = new SqliteConnectionStringBuilder
-            { DataSource = "SqlitDatabase.db" };
-            var connectionString = connectionStringBuilder.ToString();
-            var connection = new SqliteConnection(connectionString);
-
-            optionsBuilder.UseSqlite(connection);
+        {  
+            optionsBuilder.UseSqlite("DataSource=SqlitDatabase.db;");
         }
 
         // Return a list of all the flight plans, if there aren't any return null.
@@ -152,10 +150,18 @@ namespace FlightControlWeb.Data
         }
 
         // Add server to db.
-        public async Task AddServer(Server server)
+        public async Task<bool> AddServer(Server server)
         {
-            await this.Servers.AddAsync(server);
-            await this.SaveChangesAsync();
+            try
+            {
+                await this.Servers.AddAsync(server);
+                await this.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         // Delete server by id, if can't find return false.
@@ -181,7 +187,21 @@ namespace FlightControlWeb.Data
             {
                 return this.FlightWithServer.ToList();
             }
-            catch
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        // Return the server url of the flight.
+        public async Task<string> GetServerOfFlight(string id)
+        {
+            try
+            {
+                FlightWithServer flight = await this.FlightWithServer.FindAsync(id);
+                return flight.ServerURL;
+            }
+            catch (Exception)
             {
                 return null;
             }
@@ -190,14 +210,23 @@ namespace FlightControlWeb.Data
         // Add all the new flight's ids with their servers.
         public async Task AddFlightsFromServers(List<FlightWithServer> flightWithServers)
         {
-            if (flightWithServers != null)
+            foreach (FlightWithServer flight in flightWithServers)
             {
-                foreach (FlightWithServer flight in flightWithServers)
+                try
                 {
-                    await this.FlightWithServer.AddAsync(flight);
+                    if (!await this.FlightWithServer.ContainsAsync(flight))
+                    {
+                        await this.FlightWithServer.AddAsync(flight);
+                    }
                 }
-                await this.SaveChangesAsync();
+                catch (Exception e)
+                {
+                    Console.WriteLine("\nException Caught in database!");
+                    Console.WriteLine("Message :{0} ", e.Message);
+                    continue;
+                }  
             }
+            await this.SaveChangesAsync();
         }
 
         // Delete all the flight's ids with the server that has been deleted.
@@ -216,7 +245,6 @@ namespace FlightControlWeb.Data
             }
             catch (Exception)
             {
-
             }
         }
 

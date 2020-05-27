@@ -15,21 +15,24 @@ namespace FlightControlWeb.Controllers
     {
         private IDataManagementModel model;
 
-        public FlightPlanController(Data.DatabaseContext db, IDataManagementModel m)
+        public FlightPlanController(/*Data.DatabaseContext db, */IDataManagementModel m)
         {
             this.model = m;
-            model.AddDatabase(db);
+            //model.AddDatabase(db);
         }
 
         // GET: api/FlightPlan/5
         [HttpGet("{id}", Name = "GetFlightPlan")]
         public async Task<ActionResult<FlightPlan>> Get(string id)
         {
-            // Return null if not found, else return the flight plan.
-            var fp = await model.GetFlightPlan(id);
-           // Console.WriteLine("Passengers: {0}, Company name: {1}, longi: {2}, lati: {3}, date: {4}", fp.Passengers, fp.CompanyName,
-           //     fp.InitialLocation.Longitude, fp.InitialLocation.Latitude, fp.InitialLocation.DateTime.ToString("yyyy-MM-ddTHH:mm:ssZ"));
+            // Return server error if there were problems with the server that has that flight.
+            FlightPlan fp = await model.GetFlightPlan(id);
             if (fp == null)
+            {
+                return StatusCode(500);
+            }
+            // Return couldn't find the flight plan.
+            if (fp.CompanyName.Equals("?"))
             {
                 return NotFound();
             }

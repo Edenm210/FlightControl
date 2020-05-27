@@ -62,7 +62,7 @@ function sendFlightsRequest() {
     // when the state of the request changes
     xhttp.onreadystatechange = function () {
         if (this.readyState == 4) { // http request is DONE
-            if (this.status == 200 || this.status == 400) {
+            if (this.status == 200 || this.status == 400 || this.status == 500) {
                 loadFlights(xhttp.responseText);
             } else {
                 showError("Failed getting data from server");

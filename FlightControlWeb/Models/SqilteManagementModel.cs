@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -8,51 +6,29 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Text.Json.Serialization;
 using FlightControlWeb.Data;
+using System.Text.Json;
+using System.Globalization;
 
 namespace FlightControlWeb.Models
 {
     public class SqilteManagementModel : IDataManagementModel
     {
         private IDatabaseContext database;
-        private HttpClient client;
-        Dictionary<string, string> flightsWithServers;
-        int flagg;
 
-        public SqilteManagementModel(/*DatabaseContext db*/)
+        public SqilteManagementModel(IDatabaseContext db)
         {
-            //database = new DatabaseContext();
-            client = new HttpClient();
-            flightsWithServers = new Dictionary<string, string>();
-            flagg = 0;
-            //LoadDictionaryFromDB();
-        }
-
-        // Load all tha flight's ids and servers from db.
-        private void LoadDictionaryFromDB()
-        {
-            var flightWithServers = database.LoadAllFlightsWithServers();
-            if (flightWithServers != null)
-            {
-                foreach (FlightWithServer flight in flightWithServers)
-                {
-                    flightsWithServers.Add(flight.FlightId, flight.ServerURL);
-                }
-            }
+            database = db;
         }
 
         public void AddDatabase(IDatabaseContext db)
         {
             database = db;
-            if (flagg == 0)
-            {
-                LoadDictionaryFromDB();
-                flagg++;
-            }
         }
 
         // Return a list of all the active flights in this server.
         public async Task<List<Flight>> GetFlights(DateTime currTime)
         {
+            DateTime correctFormatDate;
             var flightPlans = await database.GetAllFlightPlans();
             var currFlights = new List<Flight>();
             if (flightPlans == null)
@@ -61,6 +37,11 @@ namespace FlightControlWeb.Models
             }
             foreach (FlightPlan currFlight in flightPlans)
             {
+                // Convert date time to it's right format.
+                string date = currFlight.InitialLocation.DateTime.ToString("yyyy-MM-ddTHH:mm:ssZ");
+                DateTime.TryParseExact(date, "yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture,
+                                        DateTimeStyles.RoundtripKind, out correctFormatDate);
+                currFlight.InitialLocation.DateTime = correctFormatDate;
                 // Compare the starting time of the flight with the given time.
                 int compTime = DateTime.Compare(currTime, currFlight.InitialLocation.DateTime);
                 // Starting time is exactly the given time.
@@ -180,6 +161,7 @@ namespace FlightControlWeb.Models
             {
                 return allFlights;
             }
+            HttpClient client = new HttpClient();
             // Get the flights from the servers.
             foreach (Server server in servers)
             {
@@ -192,8 +174,7 @@ namespace FlightControlWeb.Models
                     response.EnsureSuccessStatusCode();
                     string responseBody = await response.Content.ReadAsStringAsync();
                     // Convert response to flight plan object.
-                    List<Flight> flights = JsonConvert
-                        .DeserializeObject<List<Flight>>(responseBody);
+                    var flights = JsonSerializer.Deserialize<List<Flight>>(responseBody);
                     // Add to dictionary and db new flights, and change is_external.
                     flag += await UpdateChanges(flights, url);
                     // Add the flights to the list.
@@ -211,6 +192,7 @@ namespace FlightControlWeb.Models
             if (flag != 0)
             {
                 allFlights.Insert(0, new Flight { FlightId = "bad" });
+                Console.WriteLine("flag: {0}", flag);
             }
             return allFlights;
         }
@@ -244,15 +226,11 @@ namespace FlightControlWeb.Models
                 // Valid flight- we add (if dont exist) it's id and serverURL to dictionart and db,
                 // and change is_external to true.
                 flight.IsExternal = true;
-                if (!flightsWithServers.ContainsKey(flight.FlightId))
+                newFlights.Add(new FlightWithServer
                 {
-                    flightsWithServers.Add(flight.FlightId, url);
-                    newFlights.Add(new FlightWithServer
-                    {
-                        FlightId = flight.FlightId,
-                        ServerURL = url
-                    });
-                }
+                    FlightId = flight.FlightId,
+                    ServerURL = url
+                });
             }
             await database.AddFlightsFromServers(newFlights);
             return flag;
@@ -289,34 +267,35 @@ namespace FlightControlWeb.Models
         // Return the flight plan with this id.
         public async Task<FlightPlan> GetFlightPlan(string id)
         {
-            // Check if the flight plan is from other servers.
-            if (flightsWithServers.ContainsKey(id))
+            // Try to Find the flight plan from my database. if couldn't find, null will be sent.
+            var flightPlan = await database.GetFlightPlan(id);
+            if (flightPlan != null)
             {
-                // Get the server url from the dictionary.
-                string url = flightsWithServers[id];
-                try
-                {
-                    // Get the flight plan from the server.
-                    HttpResponseMessage response = await client
-                        .GetAsync(url + "/api/FlightPlan/" + id);
-                    response.EnsureSuccessStatusCode();
-                    string responseBody = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine(responseBody);
-                    // Convert response to flight plan object.
-                    return JsonConvert.DeserializeObject<FlightPlan>(responseBody);
-                }
-                catch (Exception e)
-                {
-                    // Problem with find the flight plan. 
-                    Console.WriteLine("\nException Caught!");
-                    Console.WriteLine("Message :{0} ", e.Message);
-                    return null;
-                }
+                return flightPlan;
             }
-            // Find the flight plan from my database. if couldn't find, null will be sent.
-            else
+            // Check if the flight plan is from other servers, and get the server url.
+            string serverUrl = await database.GetServerOfFlight(id);
+            if (serverUrl == null)
             {
-                return await database.GetFlightPlan(id);
+                // Didn't find the flight plan.
+                return new FlightPlan { CompanyName = "?"};
+            }
+            HttpClient client = new HttpClient();
+            try
+            {
+                // Get the flight plan from the server.
+                HttpResponseMessage response = await client
+                    .GetAsync(serverUrl + "/api/FlightPlan/" + id);
+                response.EnsureSuccessStatusCode();
+                string responseBody = await response.Content.ReadAsStringAsync();
+                // Convert response to flight plan object.
+                //Console.WriteLine(responseBody);
+                return JsonSerializer.Deserialize<FlightPlan>(responseBody);
+            }
+            catch (Exception)
+            {
+                // Problem with the server.
+                return null;
             }
         }
 
@@ -345,8 +324,18 @@ namespace FlightControlWeb.Models
             {
                 return "bad";
             }
-            await database.AddServer(server);
-            return server.ServerId;
+            if (server.ServerURL.EndsWith('/'))
+            {
+                server.ServerURL = server.ServerURL.Substring(0, server.ServerURL.Length - 1);
+                Console.WriteLine("new url: {0}", server.ServerURL);
+            }
+            // If the addition was successful return the id of the server.
+            if (await database.AddServer(server))
+            {
+                return server.ServerId;
+            }
+            // If not, it means that the key wasn't unique - return "key".
+            return "key";
         }
 
         // Delete a server.
@@ -357,25 +346,10 @@ namespace FlightControlWeb.Models
             // Delete the flight's ids from that server.
             if (s != null)
             {
-                await DeleteServerFlights(s.ServerURL);
+                await database.DeleteFlightsFromServer(s.ServerURL);
                 return await database.DeleteServer(id);
             }
             return false;
-        }
-
-        // Update the dictionary and db when server has been deleted.
-        private async Task DeleteServerFlights(string url)
-        {
-            // Delete the flights that are from that server in dictionary.
-            foreach (KeyValuePair<string, string> flight in flightsWithServers)
-            {
-                if (flightsWithServers.ContainsValue(url))
-                {
-                    flightsWithServers.Remove(flight.Key);
-                }
-            }
-            // Do the same for the db.
-            await database.DeleteFlightsFromServer(url);
         }
     }
 }

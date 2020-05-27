@@ -15,10 +15,10 @@ namespace FlightControlWeb.Controllers
     {
         private IDataManagementModel model;
 
-        public FlightsController(Data.DatabaseContext db, IDataManagementModel m)
+        public FlightsController(/*Data.DatabaseContext db, */IDataManagementModel m)
         {
             this.model = m;
-            model.AddDatabase(db);
+            //model.AddDatabase(db);
         }
 
         // GET: api/Flights
@@ -48,7 +48,7 @@ namespace FlightControlWeb.Controllers
             if (flights[0].FlightId.Equals("bad"))
             {
                 flights.RemoveAt(0);
-                return BadRequest(flights);
+                return StatusCode(500, flights);
             }
             return Ok(flights);
         }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FlightControlWeb.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -16,11 +17,10 @@ namespace FlightControlWeb
 {
     public class Startup
     {
-        public Data.DatabaseContext db;
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            using (db = new Data.DatabaseContext())
+            using (var db = new DatabaseContext())
             {
                 db.Database.EnsureCreated();
                 db.Database.Migrate();
@@ -34,9 +34,8 @@ namespace FlightControlWeb
         {
             services.AddRouting();
             services.AddControllers();
-            services.AddEntityFrameworkSqlite().AddDbContext<Data.DatabaseContext>();
-            services.AddSingleton(typeof(Models.IDataManagementModel), typeof(Models.SqilteManagementModel));
-
+            services.AddEntityFrameworkSqlite().AddDbContext<IDatabaseContext, DatabaseContext>();
+            services.AddTransient(typeof(Models.IDataManagementModel), typeof(Models.SqilteManagementModel));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

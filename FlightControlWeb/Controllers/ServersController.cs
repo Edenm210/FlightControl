@@ -15,10 +15,10 @@ namespace FlightControlWeb.Controllers
     {
         private IDataManagementModel model;
 
-        public ServersController(Data.DatabaseContext db, IDataManagementModel m)
+        public ServersController(/*Data.DatabaseContext db, */IDataManagementModel m)
         {
             this.model = m;
-            model.AddDatabase(db);
+            //model.AddDatabase(db);
         }
 
         // GET: api/Servers
@@ -43,7 +43,11 @@ namespace FlightControlWeb.Controllers
             string response = await model.AddServer(value);
             if (response.Equals("bad"))
             {
-                return BadRequest();
+                return BadRequest("Invalid Json");
+            }
+            if (response.Equals("key"))
+            {
+                return BadRequest("Not Unique Id");
             }
             return Created(response, value);
         }

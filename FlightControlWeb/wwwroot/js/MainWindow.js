@@ -1,6 +1,4 @@
-﻿// creating dictionary to store all Flights to present in the map
-let pinsMap = new Map();
-// creating list to store all Flights to present in the tables
+﻿// creating list to store all Flights to present in the tables
 let dict = [];
 let map;
 let flightShowing = null;
@@ -49,20 +47,20 @@ function creatingPushpin(location, imgUrl, scale, callback) {
 */
 
 // sync every second
-let syncLoop = setInterval(sendFlightsRequest, 3000);
+let syncLoop = setInterval(sendFlightsRequest, 1000);
 
 function sendFlightsRequest() {
     let currentDate = new Date();
     /// cutting the last chars of the seconds
     let dateStr = (currentDate.toISOString().slice(0, 19) + "Z");
-    // builting the GET request - to get all flights
-    let requestStr = "/api/Flights?relative_to=" + "2020-05-21T03:45:00Z" + "&sync_all";
+    // building the GET request - to get all flights
+    let requestStr = "/api/Flights?relative_to=" + dateStr + "&sync_all";
 
     let xhttp = new XMLHttpRequest();
     // when the state of the request changes
     xhttp.onreadystatechange = function () {
         if (this.readyState == 4) { // http request is DONE
-            if (this.status == 200 || this.status == 400 || this.status == 500) {
+            if (this.status == 200) {
                 loadFlights(xhttp.responseText);
             } else {
                 showError("Failed getting data from server");
@@ -214,9 +212,9 @@ function changeIcon(status, pin, scale) {
         //Draw scaled image
         context.drawImage(img, 0, 0, c.width, c.height);
         pin.setOptions({
-            icon: c.toDataURL(),
+            icon: c.toDataURL()
         });
-    }
+    };
     img.src = imgUrl;
 }
 
@@ -247,7 +245,7 @@ function addToMap(flightPlan) {
     //first point is initial point
     let location2 = new Microsoft.Maps.Location(flightPlan.initial_location.
         latitude, flightPlan.initial_location.longitude);
-    for (i = 0; i < flightPlan.segments.length; i++) {
+    for (i = 0; i < flightPlan.segments.length; i+=1) {
         location1 = location2;
         location2 = new Microsoft.Maps.Location(flightPlan.segments[i].
             latitude, flightPlan.segments[i].longitude);
@@ -280,7 +278,7 @@ function addFlightDetails(flightPlan, flightId) {
     let arrivalTime = new Date(flightPlan.initial_location.date_time);
     let timePassed = 0;
     let i = 0;
-    for (i; i < flightPlan.segments.length; i++) {
+    for (i; i < flightPlan.segments.length; i+=1) {
         timePassed += flightPlan.segments[i].timespan_seconds;
     }
     timePassed *= 1000; //miliseconds passed
@@ -297,7 +295,7 @@ function addFlightDetails(flightPlan, flightId) {
 function stopShowingFlightPlan() {
     if (flightShowing != null) {
         //remove lines from the map
-        for (let i = map.entities.getLength() - 1; i >= 0; i--) {
+        for (i = map.entities.getLength() - 1; i >= 0; i-=1) {
             let polyline = map.entities.get(i);
             if (polyline instanceof Microsoft.Maps.Polyline) {
                 map.entities.removeAt(i);
@@ -357,8 +355,8 @@ function deleteFlightFromDB(flightId) {
 /*
  * code that uploads a new flight to the server
  */
-const fileSelect = document.getElementById("fileSelect"),
-    fileElem = document.getElementById("fileElem");
+const fileSelect = document.getElementById("fileSelect");
+const fileElem = document.getElementById("fileElem");
 fileElem.addEventListener("change", handleFiles, false);
 
 /*when the button is pushed, it calls the event that the fileElem button was
@@ -378,7 +376,7 @@ function handleFiles() {
         if (this.readyState == 4) { //http sent and answer recieved
             if (this.status == 400) { //error accured
                 showError("error in json file");
-            } else if (this.status != 200) { //different error accured
+            } else if (this.status != 201) { //different error accured
                 showError("error loading json file");
             }
         }

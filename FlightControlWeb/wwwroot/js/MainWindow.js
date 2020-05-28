@@ -158,7 +158,7 @@ function updateTableRow(myFlightObj, tableRow) {
         document.getElementById("MyFlightsBody").innerHTML +=
             (tableRow + "<td><input type=\"button\" class=\"close\" " +
                 "value=\"x\" onclick=\"deleteFlight(this,'" +
-            myFlightObj.flight_id + "')\" onmouseover=\"onDeleteButton('" +
+                myFlightObj.flight_id + "')\" onmouseover=\"onDeleteButton('" +
                 myFlightObj.flight_id +
                 "')\" onmouseout=\"OffDeleteButton()\"></td ></tr > ");
     }
@@ -245,7 +245,7 @@ function addToMap(flightPlan) {
     //first point is initial point
     let location2 = new Microsoft.Maps.Location(flightPlan.initial_location.
         latitude, flightPlan.initial_location.longitude);
-    for (i = 0; i < flightPlan.segments.length; i+=1) {
+    for (i = 0; i < flightPlan.segments.length; i += 1) {
         location1 = location2;
         location2 = new Microsoft.Maps.Location(flightPlan.segments[i].
             latitude, flightPlan.segments[i].longitude);
@@ -278,7 +278,7 @@ function addFlightDetails(flightPlan, flightId) {
     let arrivalTime = new Date(flightPlan.initial_location.date_time);
     let timePassed = 0;
     let i = 0;
-    for (i; i < flightPlan.segments.length; i+=1) {
+    for (i; i < flightPlan.segments.length; i += 1) {
         timePassed += flightPlan.segments[i].timespan_seconds;
     }
     timePassed *= 1000; //miliseconds passed
@@ -295,7 +295,7 @@ function addFlightDetails(flightPlan, flightId) {
 function stopShowingFlightPlan() {
     if (flightShowing != null) {
         //remove lines from the map
-        for (i = map.entities.getLength() - 1; i >= 0; i-=1) {
+        for (i = map.entities.getLength() - 1; i >= 0; i -= 1) {
             let polyline = map.entities.get(i);
             if (polyline instanceof Microsoft.Maps.Polyline) {
                 map.entities.removeAt(i);

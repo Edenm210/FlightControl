@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using FlightControlWeb.Data;
@@ -15,10 +16,9 @@ namespace FlightControlWeb.Controllers
     {
         private IDataManagementModel model;
 
-        public FlightPlanController(/*Data.DatabaseContext db, */IDataManagementModel m)
+        public FlightPlanController(IDatabaseContext db, IDataManagementModel m)
         {
             this.model = m;
-            //model.AddDatabase(db);
         }
 
         // GET: api/FlightPlan/5
@@ -26,17 +26,22 @@ namespace FlightControlWeb.Controllers
         public async Task<ActionResult<FlightPlan>> Get(string id)
         {
             // Return server error if there were problems with the server that has that flight.
-            FlightPlan fp = await model.GetFlightPlan(id);
-            if (fp == null)
+            var flightplan = await model.GetFlightPlan(id);
+            if (flightplan == null)
             {
-                return StatusCode(500);
+                return StatusCode(500, "Problem With The Server That Has The Flight Plan");
             }
             // Return couldn't find the flight plan.
-            if (fp.CompanyName.Equals("?"))
+            if (flightplan.CompanyName.Equals("?"))
             {
-                return NotFound();
+                return NotFound("Could Not Found The Flight Plan");
             }
-            return Ok(fp);
+            // Return bad request because the flight plan is invalid.
+            if (flightplan.CompanyName.Equals("!"))
+            {
+                return BadRequest("Invalid Flight Plan");
+            }
+            return Ok(flightplan);
         }
 
         // POST: api/FlightPlan
@@ -48,8 +53,14 @@ namespace FlightControlWeb.Controllers
             string response = await model.AddFlightPlan(value);
             if (response.Equals("bad"))
             {
-                return BadRequest();
+                return BadRequest("Invalid Flight Plan");
             }
+            // Convert date time to it's right format.
+            DateTime correctFormatDate;
+            string date = value.InitialLocation.DateTime.ToString("yyyy-MM-ddTHH:mm:ssZ");
+            DateTime.TryParseExact(date, "yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture,
+                                    DateTimeStyles.RoundtripKind, out correctFormatDate);
+            value.InitialLocation.DateTime = correctFormatDate;
             return Created(response, value);
         }
     }

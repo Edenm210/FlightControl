@@ -15,10 +15,9 @@ namespace FlightControlWeb.Controllers
     {
         private IDataManagementModel model;
 
-        public ServersController(/*Data.DatabaseContext db, */IDataManagementModel m)
+        public ServersController(IDatabaseContext db, IDataManagementModel m)
         {
             this.model = m;
-            //model.AddDatabase(db);
         }
 
         // GET: api/Servers
@@ -38,7 +37,7 @@ namespace FlightControlWeb.Controllers
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] Server value)
         {
-            // Return "bad request" if there were problem with creation (like missing fields),
+            // Return "bad request" if there wase problem with creation (like missing fields),
             // else return "created" with server id in header. 
             string response = await model.AddServer(value);
             if (response.Equals("bad"))

@@ -15,7 +15,6 @@ namespace FlightControlWeb.Data
         Task<List<Server>> GetServers();
         Task<bool> AddServer(Server server);
         Task<bool> DeleteServer(string id);
-        List<FlightWithServer> LoadAllFlightsWithServers();
         Task AddFlightsFromServers(List<FlightWithServer> fws);
         Task DeleteFlightsFromServer(string serverURL);
         Task<Server> GetServer(string id);

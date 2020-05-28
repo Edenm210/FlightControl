@@ -10,6 +10,12 @@ namespace FlightControlWeb.Models
 {
     public class FlightPlan
     {
+        public FlightPlan()
+        {
+            // Set default as invalid values to the fields of numbers for validation checking.
+            Passengers = -1;
+        }
+
         [Key]
         [JsonIgnore]
         public string FlightId { get; set; }

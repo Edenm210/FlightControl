@@ -9,6 +9,14 @@ namespace FlightControlWeb.Models
 {
     public class FlightSegment
     {
+        public FlightSegment()
+        {
+            // Set default as invalid values to the fields of numbers for validation checking.
+            Latitude = 100;
+            Longitude = 200;
+            TimespanSeconds = -1;
+        }
+
         [Key]
         [JsonIgnore]
         public int Id { get; set; }

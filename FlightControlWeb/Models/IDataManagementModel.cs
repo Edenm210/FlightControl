@@ -8,7 +8,6 @@ namespace FlightControlWeb.Models
 {
     public interface IDataManagementModel
     {
-        void AddDatabase(IDatabaseContext db);
         Task<List<Flight>> GetFlights(DateTime currTime);
         Task<List<Flight>> GetAllFlights(DateTime currTime);
         Task<string> AddFlightPlan(FlightPlan flightPlan);

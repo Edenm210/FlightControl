@@ -65,11 +65,6 @@ namespace UnitTestFlightPlan
             throw new NotImplementedException();
         }
 
-        public List<FlightWithServer> LoadAllFlightsWithServers()
-        {
-            return new List<FlightWithServer>();
-        }
-
         public Task<string> GetServerOfFlight(string id)
         {
             throw new NotImplementedException();

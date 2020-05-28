@@ -29,13 +29,13 @@ namespace FlightControlWeb.Data
         {
             try
             {
-                List<FlightPlan> flightPlans = await this.FlightPlans
+                var flightPlans = await this.FlightPlans
                     .Include(fp => fp.InitialLocation)
                     .ToListAsync();
                 foreach (FlightPlan flightPlan in flightPlans)
                 {
                     // Get the segmants for each flight plan.
-                    List<FlightSegment> segments = await this.FlightSegments
+                    var segments = await this.FlightSegments
                         .Where(x => x.FlightId.Equals(flightPlan.FlightId))
                         .ToListAsync();
                     flightPlan.Segments = segments;
@@ -53,7 +53,7 @@ namespace FlightControlWeb.Data
         {
             try
             {
-                FlightPlan flightPlan = await this.FlightPlans
+                var flightPlan = await this.FlightPlans
                     .Include(fp => fp.InitialLocation)
                     .FirstAsync(s => s.FlightId.Equals(id));
                 if (flightPlan != null)
@@ -100,12 +100,11 @@ namespace FlightControlWeb.Data
             try
             {
                 // Find flight to remove.
-                FlightPlan flightToRemove = await this.FlightPlans.FindAsync(id);
+                var flightToRemove = await this.FlightPlans.FindAsync(id);
                 // Find initial location to remove.
-                InitialFlightLocation flightLocation = await this.InitialFlightLocations
-                    .FindAsync(id);
+                var flightLocation = await this.InitialFlightLocations.FindAsync(id);
                 this.InitialFlightLocations.Remove(flightLocation);
-                List<FlightSegment> segments = await this.FlightSegments
+                var segments = await this.FlightSegments
                     .Where(x => x.FlightId.Equals(id))
                     .ToListAsync();
                 // Remove all the segments.
@@ -169,7 +168,7 @@ namespace FlightControlWeb.Data
         {
             try
             {
-                Server server = await this.Servers.FindAsync(id);
+                var server = await this.Servers.FindAsync(id);
                 this.Servers.Remove(server);
                 await this.SaveChangesAsync();
                 return true;
@@ -180,25 +179,12 @@ namespace FlightControlWeb.Data
             }
         }
 
-        // Load all the id of flight with their servers from db.
-        public List<FlightWithServer> LoadAllFlightsWithServers()
-        {
-            try
-            {
-                return this.FlightWithServer.ToList();
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-        }
-
         // Return the server url of the flight.
         public async Task<string> GetServerOfFlight(string id)
         {
             try
             {
-                FlightWithServer flight = await this.FlightWithServer.FindAsync(id);
+                var flight = await this.FlightWithServer.FindAsync(id);
                 return flight.ServerURL;
             }
             catch (Exception)
@@ -219,10 +205,8 @@ namespace FlightControlWeb.Data
                         await this.FlightWithServer.AddAsync(flight);
                     }
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    Console.WriteLine("\nException Caught in database!");
-                    Console.WriteLine("Message :{0} ", e.Message);
                     continue;
                 }  
             }
@@ -234,7 +218,7 @@ namespace FlightControlWeb.Data
         {
             try
             {
-                List<FlightWithServer> flightsToDelete = await this.FlightWithServer
+                var flightsToDelete = await this.FlightWithServer
                     .Where(x => x.ServerURL.Equals(serverURL))
                     .ToListAsync();
                 foreach (FlightWithServer flight in flightsToDelete)

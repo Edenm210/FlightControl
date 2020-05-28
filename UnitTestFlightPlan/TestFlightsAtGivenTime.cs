@@ -68,7 +68,7 @@ namespace UnitTestFlightPlan
             seg.Latitude = 24;
             seg.Longitude = 24;
             seg.TimespanSeconds = 3600; //one hour later
-            List<FlightSegment> segments = new List<FlightSegment>();
+            var segments = new List<FlightSegment>();
             segments.Add(seg);
             var f1 = new FlightPlan();
             f1.FlightId = "1";
@@ -106,7 +106,7 @@ namespace UnitTestFlightPlan
 
         private List<Flight> GetExpectedAnswer1()
         {
-            List<Flight> flights = new List<Flight>();
+            var flights = new List<Flight>();
             DateTime dt1 = new DateTime(2020, 1, 1, 10, 00, 00, DateTimeKind.Utc); //2020-01-01T10:00:00Z           
             var f1 = new Flight("1", 22, 22, 1, "1", dt1);
             flights.Add(f1);
@@ -120,7 +120,7 @@ namespace UnitTestFlightPlan
 
         private List<Flight> GetExpectedAnswer2()
         {
-            List<Flight> flights = new List<Flight>();
+            var flights = new List<Flight>();
             DateTime dt1 = new DateTime(2020, 1, 1, 10, 00, 00, DateTimeKind.Utc); //2020-01-01T10:00:00Z           
             var f1 = new Flight("1", 24, 24, 1, "1", dt1);
             flights.Add(f1);

@@ -9,6 +9,12 @@ namespace FlightControlWeb.Models
 {
     public class InitialFlightLocation
     {
+        public InitialFlightLocation()
+        {
+            // Set default as invalid values to the fields of numbers for validation checking.
+            Latitude = 100;
+            Longitude = 200;
+        }
         [Key]
         [JsonIgnore]
         public string Id { get; set; }

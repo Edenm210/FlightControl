@@ -15,10 +15,9 @@ namespace FlightControlWeb.Controllers
     {
         private IDataManagementModel model;
 
-        public FlightsController(/*Data.DatabaseContext db, */IDataManagementModel m)
+        public FlightsController(IDatabaseContext db, IDataManagementModel m)
         {
             this.model = m;
-            //model.AddDatabase(db);
         }
 
         // GET: api/Flights
@@ -43,12 +42,17 @@ namespace FlightControlWeb.Controllers
             {
                 return NoContent();
             }
-            // There were problems with some of the flights,
-            // like invalid json, or problem with connecting to some of the servers. 
-            if (flights[0].FlightId.Equals("bad"))
+            // There were problems with connecting to some of the servers. 
+            if (flights[0].FlightId.Equals("server"))
             {
                 flights.RemoveAt(0);
                 return StatusCode(500, flights);
+            }
+            // There were validation problems with some of the flights.
+            if (flights[0].FlightId.Equals("valid"))
+            {
+                flights.RemoveAt(0);
+                return BadRequest(flights);
             }
             return Ok(flights);
         }

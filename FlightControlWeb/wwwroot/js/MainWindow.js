@@ -230,7 +230,14 @@ function showFlightPlan(pin) {
                 addToMap(flightPlan);
                 addFlightDetails(flightPlan, pin.id);
                 graphicChange(pin);
-            } else { //error accured
+            } else if (this.status == 404) { //error accured
+                showError("could not find the flight in the server");
+            } else if (this.status == 400) {
+                showError("flight details were invalid");
+            } else if (this.status == 500) {
+                showError("could not connect to the server with the flight details");
+            }
+            else {
                 showError("failed to recived flight plan of the flight "
                     + pin.id);
             }

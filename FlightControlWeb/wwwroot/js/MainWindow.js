@@ -32,7 +32,7 @@ function creatingPushpin(location, imgUrl, scale, callback) {
             icon: c.toDataURL(),
 
             //Anchor the image.
-            anchor: new Microsoft.Maps.Point(c.width / 2, c.height)
+            anchor: new Microsoft.Maps.Point(c.width / 2, c.height / 2)
         });
 
         if (callback) {
@@ -60,15 +60,32 @@ function sendFlightsRequest() {
     // when the state of the request changes
     xhttp.onreadystatechange = function () {
         if (this.readyState == 4) { // http request is DONE
-            if (this.status == 200) {
-                loadFlights(xhttp.responseText);
-            } else {
-                showError("Failed getting data from server");
-            }
+            handleStatusGetTime(this.status, xhttp)            
         }
     };
     xhttp.open("GET", requestStr, true);
     xhttp.send();
+}
+
+function handleStatusGetTime(status, xhttp) {
+    switch (status) {
+        case 200:
+            loadFlights(xhttp.responseText);
+            break;
+        case 204:
+            showError("There are no active flights at this moment");
+            break;
+        case 400:
+            showError("Notice: Some of the active flights have a validation error - only the Valid flights are presented");
+            loadFlights(xhttp.responseText);
+            break;
+        case 500:
+            showError("Could not connect to some external servers");
+            loadFlights(xhttp.responseText);
+            break;
+        default:
+            showError("Failed getting data from server");
+    }
 }
 
 function loadFlights(json) {
@@ -81,7 +98,6 @@ function loadFlights(json) {
         let myObj = flightObj[i];
 
         flightIdFromResponse.push(myObj.flight_id);
-
         //the flight exists in the dict - only need to update the PIN location,
         //NOT add another row
         if (myObj.flight_id in dict) {
@@ -192,7 +208,7 @@ function graphicChange(pin) {
     //highlight the row of the flight in the table
     let elm = document.getElementById(pin.id);
     elm.className += "bg-info";
-    changeIcon("start", pin, 0.6); //make flight icon bigger and change color
+    changeIcon("start", pin, 0.5); //make flight icon bigger and change color
 }
 
 //change the size of the flight icon
@@ -212,7 +228,8 @@ function changeIcon(status, pin, scale) {
         //Draw scaled image
         context.drawImage(img, 0, 0, c.width, c.height);
         pin.setOptions({
-            icon: c.toDataURL()
+            icon: c.toDataURL(),
+            anchor: new Microsoft.Maps.Point(c.width / 2, c.height / 2)
         });
     };
     img.src = imgUrl;
@@ -329,17 +346,18 @@ function stopShowingFlightPlan() {
  * code that deletes a flight
  */
 function deleteFlight(flight, flightId) {
+    // deleting the flight from DB
+    deleteFlightFromDB(flightId);
     if ((flightShowing != null) && (flightId == flightShowing.id)) {
         stopShowingFlightPlan();
     }
     //removing the pin from map
     map.entities.remove(dict[flightId]);
-    delete dict[flightId];
     let i = flight.parentNode.parentNode;
     i.parentNode.removeChild(i);
+    delete dict[flightId];
 
-    // deleting the flight from DB
-    deleteFlightFromDB(flightId);
+    
 }
 
 
@@ -351,7 +369,11 @@ function deleteFlightFromDB(flightId) {
     xhttp.onreadystatechange = function () {
         // The request has been completed successfully
         if (this.readyState == 4 && this.status != 200) {
-            showError("Failed to delete flight");
+            if (this.status == 404) { // error
+                showError("Could not find the flight to delete");
+            } else {
+                showError("Failed to delete flight");
+            }
         }
     };
     xhttp.open("DELETE", requestStr, true);

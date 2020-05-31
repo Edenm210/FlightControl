@@ -1,37 +1,36 @@
 # FLIGHTS WEB APPLICATION
-A web application that allows the user to upload new flights to the server and view the active flights.
-The server connects to other servers, and presnts flights from it's database, and the flights of the servers that it is connected to.
+A web application that allows the user to view the active flights and to upload or delete flights from server.
 -----------------------------------------------------
-server side:
-uses Microsoft SQlite EF Core for the database.
-The database stores the flights and additional servers that the server connects to.
-The server recieves and sends json files.
-The server can return a flight plan of a specific flight, or a list of all the flights that are active at a certain time, and the position of the flights at the time given.
+SERVER SIDE:
+- uses Microsoft SQlite EF Core for the database.
+- The database stores the flights and additional servers that the server connects to.
+- The server synchronizes with other servers and receives additional flights from them.
+- The server receives and sends json files.
 
 HTTP command:
 - GET /api/Flights?relative_to=<DATE_TIME>
-The server return a list of all the flights in the data base that are active at the time given, and the position of the flights at that time.
+The server return a list of all the flights in the database that are active at the time given, and the position of the flights at that time.
 - GET /api/Flights?relative_to=<DATE_TIME>&sync_all
-Like the previous, with the addition of all the active flights in the servers that it is synced with.
+Like the previous, with the addition of all the active flights in the servers that it is synchronized with.
 - POST /api/FlightPlan
-Gives the server a new flight plan to save in the database. The flight plan is a jzon file in the body
+Gives the server a new flightPlan to save in the database. The flight plan is a jzon file in the body
 - GET /api/FlightPlan/{id}
-The server returns a flight plan with the given flight ID.
+The server returns a flighPlan with the given flight ID.
 - DELETE /api/FlightPlan/{id}
-THe server erases the flight with the given ID from the database.
+The server erases the flight with the given ID from the database.
 - GET /api/servers
-The server return a list of the other servers it is synced with.
+The server return a list of the other servers it is synchronized with.
 - POST /api/servers
-Gives the server a new server to sync with.
+Gives the server a new server to synchronize with.
 - DELETE /api/servers/{id}
 delete a server
 
 --------------------------------------------------------------------------
 CLIENT SIDE
-- The webpage was designed useing css and bootstrap
-- Presents all the active flights in a table, separationg internal and external flights.
+- The webpage was designed using css and bootstrap
+- Presents all the active flights in a table, separating internal and external flights.
 - Shows the current position of the flights on the map.
-- If a flight is pushed, in the table or the map, the complete route of the flight is shown.
+- If a flight is clicked, in the table or the map, the complete route of the flight is shown.
 - Option of adding new flights.
 - Option of deleting an internal flight from the server
 
@@ -77,5 +76,6 @@ JSON FILES EXAMPLES:
 -------------------------------------------------------------------------------------------
 
 COMMENTS:
-* All the times in the program are relative to UTC
-* The client cannot access outside servers (add or remove)
+* All the times in the program are relative to UTC.
+* The client cannot access outside servers (add or remove).
+* The calculations of the current position of the flights assumes a flat plain.

@@ -3,6 +3,7 @@ let dict = [];
 let map;
 let flightShowing = null;
 let onDelete = null;
+let deletedFlights = [];
 
 function GetMap() {
     map = new Microsoft.Maps.Map("#myMap", {});
@@ -76,7 +77,8 @@ function handleStatusGetTime(status, xhttp) {
             showError("There are no active flights at this moment");
             break;
         case 400:
-            showError("Notice: Some of the active flights have a validation error - only the Valid flights are presented");
+            showError("Notice: Some of the active flights have a validation " +
+                "error - only the Valid flights are presented");
             loadFlights(xhttp.responseText);
             break;
         case 500:
@@ -96,6 +98,10 @@ function loadFlights(json) {
     for (i in flightObj) {
         // getting flight from the response
         let myObj = flightObj[i];
+        //if the flight was deleted do not show it
+        if (deletedFlights.includes(myObj.flight_id)) {
+            continue;
+        }
 
         flightIdFromResponse.push(myObj.flight_id);
         //the flight exists in the dict - only need to update the PIN location,
@@ -252,7 +258,8 @@ function showFlightPlan(pin) {
             } else if (this.status == 400) {
                 showError("flight details were invalid");
             } else if (this.status == 500) {
-                showError("could not connect to the server with the flight details");
+                showError(
+                    "could not connect to the server with the flight details");
             }
             else {
                 showError("failed to recived flight plan of the flight "
@@ -357,7 +364,10 @@ function deleteFlight(flight, flightId) {
     i.parentNode.removeChild(i);
     delete dict[flightId];
 
-    
+    //save ID of deleted flight so it won't appear again. only a problem in the
+    //first few seconds, untill it is deleted from the DB in the server
+    deletedFlights.push(flightId);
+    setTimeout(function () { deletedFlights.shift(); }, 3000);
 }
 
 

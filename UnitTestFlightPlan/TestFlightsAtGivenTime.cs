@@ -24,7 +24,7 @@ namespace UnitTestFlightPlan
             
 
             //Act
-            var dt = new DateTime(2020, 1, 1, 10, 30, 00, DateTimeKind.Utc); //2020-01-01T10:00:00Z
+            var dt = new DateTime(2020, 1, 1, 10, 30, 00, DateTimeKind.Utc); //2020-01-01T10:30:00Z
             var actualFlightList = model.GetFlights(dt).Result;
             var expectedFlightList = GetExpectedAnswer1();
 
@@ -46,7 +46,7 @@ namespace UnitTestFlightPlan
             SqilteManagementModel model = new SqilteManagementModel(stubDB);
 
             //Act
-            var dt = new DateTime(2020, 1, 1, 11, 00, 00, DateTimeKind.Utc); //2020-01-01T10:00:00Z
+            var dt = new DateTime(2020, 1, 1, 11, 00, 00, DateTimeKind.Utc); //2020-01-01T11:00:00Z
             var actualFlightList = model.GetFlights(dt).Result;
             var expectedFlightList = GetExpectedAnswer2();
 
@@ -79,7 +79,7 @@ namespace UnitTestFlightPlan
             stubDB.AddFlightPlan(f1);
 
             //second flight
-            dt1 = new DateTime(2020, 1, 1, 10, 15, 00, DateTimeKind.Utc); //2020-01-01T10:00:00Z
+            dt1 = new DateTime(2020, 1, 1, 10, 15, 00, DateTimeKind.Utc); //2020-01-01T10:15:00Z
             initialLoc = new InitialFlightLocation();
             initialLoc.Longitude = 30;
             initialLoc.Latitude = 30;
@@ -107,11 +107,12 @@ namespace UnitTestFlightPlan
         private List<Flight> GetExpectedAnswer1()
         {
             var flights = new List<Flight>();
-            DateTime dt1 = new DateTime(2020, 1, 1, 10, 00, 00, DateTimeKind.Utc); //2020-01-01T10:00:00Z           
+            //2020-01-01T10:00:00Z
+            DateTime dt1 = new DateTime(2020, 1, 1, 10, 00, 00, DateTimeKind.Utc);
             var f1 = new Flight("1", 22, 22, 1, "1", dt1);
             flights.Add(f1);
-
-            DateTime dt2 = new DateTime(2020, 1, 1, 10, 15, 00, DateTimeKind.Utc); //2020-01-01T10:00:00Z
+            //2020-01-01T10:15:00Z
+            DateTime dt2 = new DateTime(2020, 1, 1, 10, 15, 00, DateTimeKind.Utc);
             var f2 = new Flight("2", 31, 31, 2, "2", dt2);
             flights.Add(f2);
             return flights;
@@ -121,7 +122,8 @@ namespace UnitTestFlightPlan
         private List<Flight> GetExpectedAnswer2()
         {
             var flights = new List<Flight>();
-            DateTime dt1 = new DateTime(2020, 1, 1, 10, 00, 00, DateTimeKind.Utc); //2020-01-01T10:00:00Z           
+            //2020-01-01T10:00:00Z
+            DateTime dt1 = new DateTime(2020, 1, 1, 10, 00, 00, DateTimeKind.Utc);
             var f1 = new Flight("1", 24, 24, 1, "1", dt1);
             flights.Add(f1);
             return flights;

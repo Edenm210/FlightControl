@@ -118,8 +118,8 @@ function loadFlights(json) {
 
             dict[myObj.flight_id].setLocation(newLocation);
         }
-        // the flight does not exist in the dictionary and not at the middle of adding process - need to add Row and Add
-        //to dict
+        // the flight does not exist in the dictionary and not in the middle of 
+        //adding process - need to add Row and Add to dict
         else if (!(addedFlights.includes(myObj.flight_id))) {
             addedFlights.push(myObj.flight_id);
             //Create a location object of where to place the pushpin on the map

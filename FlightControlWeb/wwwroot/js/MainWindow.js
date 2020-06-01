@@ -15,8 +15,7 @@ function GetMap() {
         center: new Microsoft.Maps.Location(32.006833306, 34.885329792),
         zoom: 3
     });
-    document.getElementById("myMap").addEventListener
-        ("click", stopShowingFlightPlan);
+    document.getElementById("myMap").addEventListener("click", stopShowingFlightPlan);
 }
 
 function creatingPushpin(location, imgUrl, scale, callback) {
@@ -96,7 +95,7 @@ function loadFlights(json) {
     // list of all id got from the response
     let flightIdFromResponse = [];
     let flightObj = JSON.parse(json);
-    for (i in flightObj) {
+    for (let i in flightObj) {
         // getting flight from the response
         let myObj = flightObj[i];
         //if the flight was deleted do not show it
@@ -126,8 +125,7 @@ function loadFlights(json) {
             let location = new Microsoft.Maps.Location
                 (myObj.latitude, myObj.longitude);
 
-            creatingPushpin
-                (location, "/Images/airplane1.png", 0.35, function (pin) {
+            creatingPushpin(location, "/Images/airplane1.png", 0.35, function (pin) {
                     pin.id = myObj.flight_id;
                     map.entities.push(pin);
                     dict[myObj.flight_id] = pin;
@@ -138,7 +136,7 @@ function loadFlights(json) {
                     });
                 });
 
-            tableRow = "<tr id=\"" + myObj.flight_id +
+            let tableRow = "<tr id=\"" + myObj.flight_id +
                 "\" onclick=\"rowClicked('" + myObj.flight_id + "')\"><td>" +
                 myObj.flight_id + "</td>" + "<td>" + myObj.company_name +
                 "</td>" + "<td id=" + myObj.flight_id + "Long>" +
@@ -153,7 +151,7 @@ function loadFlights(json) {
 
     // going throught the dict and checking the there are flights that not in
     //the response. If there is - delete from dict, its row and pin
-    for (flightId in dict) {
+    for (let flightId in dict) {
         //Return the value for the current key
         let exists = flightIdFromResponse.includes(flightId);
 
@@ -281,8 +279,8 @@ function addToMap(flightPlan) {
     //first point is initial point
     let location2 = new Microsoft.Maps.Location(flightPlan.initial_location.
         latitude, flightPlan.initial_location.longitude);
-    for (i = 0; i < flightPlan.segments.length; i += 1) {
-        location1 = location2;
+    for (let i = 0; i < flightPlan.segments.length; i += 1) {
+        let location1 = location2;
         location2 = new Microsoft.Maps.Location(flightPlan.segments[i].
             latitude, flightPlan.segments[i].longitude);
         let coords = [location1, location2];
@@ -331,14 +329,14 @@ function addFlightDetails(flightPlan, flightId) {
 function stopShowingFlightPlan() {
     if (flightShowing != null) {
         //remove lines from the map
-        for (i = map.entities.getLength() - 1; i >= 0; i -= 1) {
+        for (let i = map.entities.getLength() - 1; i >= 0; i -= 1) {
             let polyline = map.entities.get(i);
             if (polyline instanceof Microsoft.Maps.Polyline) {
                 map.entities.removeAt(i);
             }
         }
         //remove flightPlan table
-        flightTable = document.getElementById("FlightDetailsTable");
+        let flightTable = document.getElementById("FlightDetailsTable");
         if (flightTable.rows.length == 3) {
             document.getElementById("FlightDetailsTable").deleteRow(-1);
         }
@@ -405,7 +403,7 @@ fileElem.addEventListener("change", handleFiles, false);
 
 /*when the button is pushed, it calls the event that the fileElem button was
  * pushed, so we can upload a new file*/
-fileSelect.addEventListener("click", function (e) {
+fileSelect.addEventListener("click", function () {
     if (fileElem) {
         fileElem.click();
     }

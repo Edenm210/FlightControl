@@ -4,6 +4,8 @@ let map;
 let flightShowing = null;
 let onDelete = null;
 let deletedFlights = [];
+let addedFlights = [];
+
 
 function GetMap() {
     map = new Microsoft.Maps.Map("#myMap", {});
@@ -77,13 +79,13 @@ function handleStatusGetTime(status, xhttp) {
             showError("There are no active flights at this moment");
             break;
         case 400:
+            loadFlights(xhttp.responseText);
             showError("Notice: Some of the active flights have a validation " +
                 "error - only the Valid flights are presented");
-            loadFlights(xhttp.responseText);
             break;
         case 500:
-            showError("Could not connect to some external servers");
             loadFlights(xhttp.responseText);
+            showError("Could not connect to some external servers");
             break;
         default:
             showError("Failed getting data from server");
@@ -94,7 +96,6 @@ function loadFlights(json) {
     // list of all id got from the response
     let flightIdFromResponse = [];
     let flightObj = JSON.parse(json);
-
     for (i in flightObj) {
         // getting flight from the response
         let myObj = flightObj[i];
@@ -117,9 +118,10 @@ function loadFlights(json) {
 
             dict[myObj.flight_id].setLocation(newLocation);
         }
-        // the flight does not exist in the dictionary - need to add Row and Add
+        // the flight does not exist in the dictionary and not at the middle of adding process - need to add Row and Add
         //to dict
-        else {
+        else if (!(addedFlights.includes(myObj.flight_id))) {
+            addedFlights.push(myObj.flight_id);
             //Create a location object of where to place the pushpin on the map
             let location = new Microsoft.Maps.Location
                 (myObj.latitude, myObj.longitude);
@@ -129,6 +131,8 @@ function loadFlights(json) {
                     pin.id = myObj.flight_id;
                     map.entities.push(pin);
                     dict[myObj.flight_id] = pin;
+                    addedFlights.shift();
+
                     Microsoft.Maps.Events.addHandler(pin, "click", function () {
                         showFlightPlan(pin);
                     });
@@ -143,6 +147,7 @@ function loadFlights(json) {
                 "</td>" + "<td>" + myObj.date_time + "</td>";
 
             updateTableRow(myObj, tableRow);
+
         }
     }
 

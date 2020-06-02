@@ -176,6 +176,11 @@ namespace FlightControlWeb.Models
                     // Add the flights to the list.
                     allFlights.AddRange(flights);
                 }
+                catch(JsonException)
+                {
+                    // Change flag so we will know that somthing went wrong.
+                    validationError++;
+                }
                 catch (Exception)
                 {
                     // Change flag so we will know that somthing went wrong.

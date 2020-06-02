@@ -1,0 +1,107 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <script src="bootstrap/js/jquery-3.4.1.slim.min.js"></script>
+    <script src="bootstrap/js/popper.min.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="/css/MainWindowStyles.css">
+    <!--The page Title-->
+    <title>Flight Control</title>
+
+
+</head>
+<body style="background-color:#F2F4F6;">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 class="text-center">Flight Control</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-7">
+                <!--Map-->
+                <div id="myMap" onload="GetMap()"></div>
+                <h5 id="flightDetails" style="display:none">Flight Details</h5>
+                <!--Flight Details Table-->
+                <table id="FlightDetailsTable" style="display:none">
+                    <tr>
+                        <th rowspan="2">ID</th>
+                        <th rowspan="2">Company</th>
+                        <th rowspan="2">Passengers</th>
+                        <th colspan="2">Departure</th>
+                        <th rowspan="2">Departure Date</th>
+                        <th colspan="2">Destination</th>
+                        <th rowspan="2">Arrival Date</th>
+                    </tr>
+                    <tr id="PositionTable">
+                        <!--source-->
+                        <th>longitude</th>
+                        <th>latitude</th>
+                        <!--destination-->
+                        <th>longitude</th>
+                        <th>latitude</th>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-5" id="table-wrapper">
+                <p id="errors" class="bg-danger text-center mt-0 mb-0 rounded"
+                   style="display:none"></p>
+                <!--to upload new flights-->
+                <input type="file" id="fileElem" style="display:none" accept=".json" onclick="this.value=null">
+                <button id="fileSelect" class="btn btn-warning">Upload a new flight</button>
+                <!--My Flights Table-->
+                <h3>My Flights</h3>
+                <div id="table-scroll">
+                    <table class="MyFlights">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Company</th>
+                                <th>Longitude</th>
+                                <th>Latitude</th>
+                                <th>Passengers</th>
+                                <th>Departure Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="MyFlightsBody">
+                        </tbody>
+                    </table>
+                </div>
+                <!--External Flights Table-->
+                <h3>External Flights</h3>
+                <div id="table-scroll">
+                    <table class="ExternalFlights">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Company</th>
+                                <th>Longitude</th>
+                                <th>Latitude</th>
+                                <th>Passengers</th>
+                                <th>Departure Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ExternalFlightsBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Map-->
+    <script type='text/javascript' src='https://www.bing.com/api/maps/mapcontrol?callback=GetMap&key=710BZYiMbjoHEHnwrU58~2rj18XZNNBTW6Ffem4GMmg~Ai2fo-YJNCUlM8JX9RroILMS-sIqscCUrMvFyQZ3v_K_AsGpKyUu1S8ZknzndFgO' async defer></script>
+
+
+    <script src="/js/MainWindow.js"></script>
+
+
+</body>
+</html>

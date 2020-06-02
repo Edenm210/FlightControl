@@ -75,6 +75,7 @@ function handleStatusGetTime(status, xhttp) {
             loadFlights(xhttp.responseText);
             break;
         case 204:
+            checkIfFlightEnded([]); // sending an empty array because the response is empty
             showError("There are no active flights at this moment");
             break;
         case 400:
@@ -149,6 +150,10 @@ function loadFlights(json) {
         }
     }
 
+    checkIfFlightEnded(flightIdFromResponse);
+}
+
+function checkIfFlightEnded(flightIdFromResponse) {
     // going throught the dict and checking the there are flights that not in
     //the response. If there is - delete from dict, its row and pin
     for (let flightId in dict) {

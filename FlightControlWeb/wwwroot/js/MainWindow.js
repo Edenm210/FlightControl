@@ -270,7 +270,7 @@ function showFlightPlan(pin) {
                     "could not connect to the server with the flight details");
             }
             else {
-                showError("failed to recived flight plan of the flight "
+                showError("failed to receive flight plan of the flight "
                     + pin.id);
             }
         }

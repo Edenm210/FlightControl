@@ -64,7 +64,7 @@
 
   <ItemGroup>
     <None Update="SqlitDatabase.db">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

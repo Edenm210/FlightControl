@@ -259,13 +259,6 @@ namespace FlightControlWeb.Data
             }
 
             return String.Join(null, id);
-
-            /*
-            var str1 = PasswordGenerator.Generate(length: 4, allowed: Sets.Upper);
-            var str2 = PasswordGenerator.Generate(length: 2, allowed: Sets.Lower);
-            var str3 = PasswordGenerator.Generate(length: 2, allowed: Sets.Digits);
-            return str1 + str2 +str3;
-            */
         }
     }
 }

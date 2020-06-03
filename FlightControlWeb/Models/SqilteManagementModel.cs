@@ -162,13 +162,27 @@ namespace FlightControlWeb.Models
             foreach (Server server in servers)
             {
                 string url = server.ServerURL;
+                string responseBody = "";
                 try
                 {
                     // Connecting to servers.
                     HttpResponseMessage response = await client
                         .GetAsync(url + "/api/Flights?relative_to=" + time);
                     response.EnsureSuccessStatusCode();
-                    string responseBody = await response.Content.ReadAsStringAsync();
+                    responseBody = await response.Content.ReadAsStringAsync();
+                }
+                catch (Exception)
+                {
+                    // Change flag so we will know that somthing went wrong.
+                    serverError++;
+                }
+                // There was no content from that server.
+                if (responseBody.Equals(""))
+                {
+                    continue;
+                }
+                try
+                {
                     // Convert response to flight plan object.
                     var flights = JsonSerializer.Deserialize<List<Flight>>(responseBody);
                     // Add the new flights with their server to database, And update is_external.
@@ -176,15 +190,13 @@ namespace FlightControlWeb.Models
                     // Add the flights to the list.
                     allFlights.AddRange(flights);
                 }
-                catch(JsonException)
+                catch (JsonException)
                 {
                     // Change flag so we will know that somthing went wrong.
                     validationError++;
                 }
-                catch (Exception)
+                catch(Exception)
                 {
-                    // Change flag so we will know that somthing went wrong.
-                    serverError++;
                 }
             }
             // Somthing went wrong with some of the servers.
@@ -272,20 +284,34 @@ namespace FlightControlWeb.Models
                 return new FlightPlan { CompanyName = "?"};
             }
             HttpClient client = new HttpClient();
+            string responseBody = "";
             try
             {
                 // Get the flight plan from the server.
                 HttpResponseMessage response = await client
                     .GetAsync(serverUrl + "/api/FlightPlan/" + id);
                 response.EnsureSuccessStatusCode();
-                string responseBody = await response.Content.ReadAsStringAsync();
-                // Convert response to flight plan object.
-                flightPlan = JsonSerializer.Deserialize<FlightPlan>(responseBody);
+                responseBody = await response.Content.ReadAsStringAsync();
             }
             catch (Exception)
             {
                 // Problem with the server.
                 return null;
+            }
+            // The server didn't found the flightplan.
+            if (responseBody.Equals(""))
+            {
+                return new FlightPlan { CompanyName = "?" };
+            }
+            try
+            {
+                // Convert response to flight plan object.
+                flightPlan = JsonSerializer.Deserialize<FlightPlan>(responseBody);
+            }
+            catch (JsonException)
+            {
+                // Invalid flight plan.
+                return new FlightPlan { CompanyName = "!" };
             }
             // Invalid flight plan.
             if (!IsValidFlightPlan(flightPlan))

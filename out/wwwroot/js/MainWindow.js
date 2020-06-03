@@ -5,6 +5,7 @@ let flightShowing = null;
 let onDelete = null;
 let deletedFlights = [];
 let addedFlights = [];
+let serverOnline = null;
 
 
 function GetMap() {
@@ -70,6 +71,7 @@ function sendFlightsRequest() {
 }
 
 function handleStatusGetTime(status, xhttp) {
+    serverOnline = true;
     switch (status) {
         case 200:
             loadFlights(xhttp.responseText);
@@ -88,7 +90,8 @@ function handleStatusGetTime(status, xhttp) {
             showError("Could not connect to some external servers");
             break;
         default:
-            showError("Failed getting data from server");
+            serverOnline = false; // so operations will not be performed (delete button, upload files)
+            showError("Server is Offline - reconnect in order to get/send data");
     }
 }
 
@@ -269,7 +272,8 @@ function showFlightPlan(pin) {
                 showError(
                     "could not connect to the server with the flight details");
             }
-            else {
+            else if (serverOnline) {
+                // this message appears only when the server is online, otherwise there is a general connection Error
                 showError("failed to receive flight plan of the flight "
                     + pin.id);
             }
@@ -361,21 +365,25 @@ function stopShowingFlightPlan() {
  * code that deletes a flight
  */
 function deleteFlight(flight, flightId) {
-    // deleting the flight from DB
-    deleteFlightFromDB(flightId);
-    if ((flightShowing != null) && (flightId == flightShowing.id)) {
-        stopShowingFlightPlan();
-    }
-    //removing the pin from map
-    map.entities.remove(dict[flightId]);
-    let i = flight.parentNode.parentNode;
-    i.parentNode.removeChild(i);
-    delete dict[flightId];
+    OffDeleteButton();
+    // when the server is online we are able to delete flights
+    if (serverOnline) {
+        // deleting the flight from DB
+        deleteFlightFromDB(flightId);
+        if ((flightShowing != null) && (flightId == flightShowing.id)) {
+            stopShowingFlightPlan();
+        }
+        //removing the pin from map
+        map.entities.remove(dict[flightId]);
+        let i = flight.parentNode.parentNode;
+        i.parentNode.removeChild(i);
+        delete dict[flightId];
 
-    //save ID of deleted flight so it won't appear again. only a problem in the
-    //first few seconds, untill it is deleted from the DB in the server
-    deletedFlights.push(flightId);
-    setTimeout(function () { deletedFlights.shift(); }, 3000);
+        //save ID of deleted flight so it won't appear again. only a problem in the
+        //first few seconds, untill it is deleted from the DB in the server
+        deletedFlights.push(flightId);
+        setTimeout(function () { deletedFlights.shift(); }, 3000);
+    }   
 }
 
 
@@ -407,9 +415,9 @@ const fileElem = document.getElementById("fileElem");
 fileElem.addEventListener("change", handleFiles, false);
 
 /*when the button is pushed, it calls the event that the fileElem button was
- * pushed, so we can upload a new file*/
+ * pushed, so we can upload a new file - only if the server is online*/
 fileSelect.addEventListener("click", function () {
-    if (fileElem) {
+    if (fileElem && serverOnline) {
         fileElem.click();
     }
 }, false);

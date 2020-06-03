@@ -365,6 +365,7 @@ function stopShowingFlightPlan() {
  * code that deletes a flight
  */
 function deleteFlight(flight, flightId) {
+    OffDeleteButton();
     // when the server is online we are able to delete flights
     if (serverOnline) {
         // deleting the flight from DB

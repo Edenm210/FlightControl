@@ -69,8 +69,8 @@ JSON FILES EXAMPLES:
 }
 
 * server: 
- "ServerId": "[SERVER_ID]",
- "ServerURL": "www.server.com"
+ "serverId": "[SERVER_ID]",
+ "serverURL": "www.server.com"
 }
 
 -------------------------------------------------------------------------------------------

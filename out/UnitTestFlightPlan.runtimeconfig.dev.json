@@ -1,0 +1,8 @@
+{
+  "runtimeOptions": {
+    "additionalProbingPaths": [
+      "C:\\Users\\odeya\\.dotnet\\store\\|arch|\\|tfm|",
+      "C:\\Users\\odeya\\.nuget\\packages"
+    ]
+  }
+}

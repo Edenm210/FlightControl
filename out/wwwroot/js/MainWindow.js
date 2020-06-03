@@ -209,11 +209,10 @@ function OffDeleteButton() {
 /*
  * code that shows the route of a flight when clicked
  */
-
 function rowClicked(id) {
     //if "onDelete" is equal to the id, the delete button was clicked and
     //shouldn't show flight
-    if (onDelete != id) {
+    if (onDelete != id && serverOnline) {
         if (flightShowing != null) {
             stopShowingFlightPlan();
         }
